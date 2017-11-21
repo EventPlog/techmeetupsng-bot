@@ -16,3 +16,7 @@ Visit http://m.me/techmeetupsng-bot
 
 Or the facebook page: https://web.facebook.com/TechMeetupsNG/
 
+![Alt text](demo/images/IMG_6056.PNG?raw=true "Title")
+![Alt text](demo/images/IMG_6057.PNG?raw=true "Title")
+![Alt text](demo/images/IMG_6058.PNG?raw=true "Title")
+![Alt text](demo/images/IMG_6059.PNG?raw=true "Title")
