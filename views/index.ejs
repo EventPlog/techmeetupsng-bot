@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% if (title) { %>
+      <title><%= title %></title>
+    <% } else { %>
+      <title>Kara Cosmetics</title>
+    <% } %>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="/bundle.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script>
+     <% if (locals.event) { %>
+     const event = JSON.parse('<%- locals.event  %>');
+     <% } else { %>
+     const event = null;
+     <% } %>
+     <% if (locals.feedback) { %>
+     const feedback = JSON.parse('<%- locals.feedback  %>');
+     <% } else { %>
+     const feedback = null;
+     <% } %>
+     <% if (demo) { %>
+       window.attachApp("demo", event);
+     <% } else if (typeof terms !== 'undefined' && terms) { %>
+       window.attachTerms()
+     <% } else { %>
+       window.extAsyncInit = function() {
+         // the Messenger Extensions JS SDK is done loading
+         MessengerExtensions.getUserID(function success(uids) {
+           console.log('[getUserID] feedback is defined', )
+           if(uids.psid) {
+             return window.attachFeedback(uids.psid, event);
+           }
+           window.attachApp(uids.psid, event);
+         }, function error(err) {
+           console.log('error in retrieveing user id', err);
+           console.log('feedback is defined')
+           if(typeof feedback !== 'undefined' && feedback) {
+             window.attachFeedback(null, event);
+           } else {
+             window.attachApp();
+           }
+         });
+       };
+
+       (function(doc, script, domId){
+         var js, fjs = doc.getElementsByTagName(script)[0];
+         if (doc.getElementById(domId)) { return; }
+         js = doc.createElement(script);
+         js.id = domId;
+         js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'Messenger'));
+     <% } %>
+    </script>
+  </body>
+</html>
