@@ -16,7 +16,7 @@ Visit http://m.me/techmeetupsng-bot
 
 Or the facebook page: https://web.facebook.com/TechMeetupsNG/
 
-<img src="demo/images/IMG_6056.PNG?raw=true" alt-text="Show Events" width="500">
-![](demo/images/IMG_6057.PNG?raw=true "View an Event" width=100)
-![](demo/images/IMG_6058.PNG?raw=true "Give feedback" width=100)
-![](demo/images/IMG_6059.PNG?raw=true "Set preferences" width=100)
+<img src="demo/images/IMG_6056.PNG?raw=true" alt-text="Show Events" width="300">
+<img src="demo/images/IMG_6057.PNG?raw=true" alt-text="View an Event" width="300">
+<img src="demo/images/IMG_6058.PNG?raw=true" alt-text="Give feedback" width="300")
+<img src="demo/images/IMG_6059.PNG?raw=true" alt-text"Set preferences" width="300")
