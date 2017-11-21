@@ -43,7 +43,6 @@ window.attachApp = (userId, event) => {
   }
 };
 
-
 // Simple initializer for attaching the Terms and Conditions to the DOM
 window.attachTerms = () => {
   console.log('[window.attachTerms] Attaching terms ')
