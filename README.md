@@ -18,5 +18,5 @@ Or the facebook page: https://web.facebook.com/TechMeetupsNG/
 
 <img src="demo/images/IMG_6056.PNG?raw=true" alt-text="Show Events" width="300">
 <img src="demo/images/IMG_6057.PNG?raw=true" alt-text="View an Event" width="300">
-<img src="demo/images/IMG_6058.PNG?raw=true" alt-text="Give feedback" width="300")
-<img src="demo/images/IMG_6059.PNG?raw=true" alt-text"Set preferences" width="300")
+<img src="demo/images/IMG_6058.PNG?raw=true" alt-text="Give feedback" width="300">
+<img src="demo/images/IMG_6059.PNG?raw=true" alt-text="Set preferences" width="300">
