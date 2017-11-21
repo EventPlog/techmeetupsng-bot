@@ -8,7 +8,7 @@
 // ===== LODASH ================================================================
 import castArray from 'lodash/castArray';
 
-require('dotenv').config()
+// require('dotenv').config()
 // ===== MESSENGER =============================================================
 import api from './api';
 import messages from './messages';

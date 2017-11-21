@@ -8,7 +8,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-len */
 
-require('dotenv').config()
+// require('dotenv').config()
 /*
  * MESSAGES
  *

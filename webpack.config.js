@@ -1,5 +1,5 @@
 /* eslint-disable */
-require('dotenv').config()
+// require('dotenv').config()
 
 var path = require('path');
 const webpack = require('webpack');
