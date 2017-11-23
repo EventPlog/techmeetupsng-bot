@@ -27,7 +27,7 @@ import 'react-weui/lib/react-weui.min.css';
 import '../public/style.css';
 
 // Simple initializer for attaching the Preferences App to the DOM
-window.attachApp = (userId, event) => {
+window.attachApp = (userId, event, recipientId) => {
   /**
    * getContext is only available on iOS and Android,
    * so show an error page if userId is undefined
@@ -35,7 +35,7 @@ window.attachApp = (userId, event) => {
   console.log('[window.attachApp] Attaching app for event ', event)
   if (userId) {
     const app = event
-      ? <Event {...event} userId={userId} />
+      ? <Event {...event} userId={userId} recipientId={recipientId} />
       : <App userId={userId} />;
     ReactDOM.render(app, document.getElementById('content'));
   } else {

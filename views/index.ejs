@@ -34,7 +34,7 @@
            if(uids.psid) {
              return window.attachFeedback(uids.psid, event);
            }
-           window.attachApp(uids.psid, event);
+           window.attachApp(uids.psid, event, recipientId);
          }, function error(err) {
            console.log('error in retrieveing user id', err);
            console.log('feedback is defined')

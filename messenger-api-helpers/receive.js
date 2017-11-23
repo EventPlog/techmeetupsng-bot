@@ -75,7 +75,12 @@ const handleReceiveMessage = (event) => {
   // spamming the bot if the requests take some time to return.
   sendApi.sendReadReceipt(senderId);
 
-  if (message.text) { sendApi.sendHelloEventMessage(senderId); }
+  if (message.text) {
+    if (message.text.toLowerCase() == 'show events' || message.text.toLowerCase() == 'events') {
+      return sendApi.sendChooseEventMessage(senderId);
+    }
+    sendApi.sendHelloEventMessage(senderId);
+  }
 };
 
 /*

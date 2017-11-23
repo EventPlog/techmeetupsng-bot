@@ -15,12 +15,12 @@ import EventStore from '../stores/event-store';
 const router = express.Router();
 
 // Get Event page
-router.get('/:eventId', ({params: {eventId}}, res) => {
+router.get('/:eventId', ({params: {eventId}, query: {recipientId}}, res) => {
   // const event = EventStore.get(eventId);
 
   const event = events[0];
   const eventJSON = JSON.stringify(events[0]);
-  console.log(`GET Event response: ${eventJSON}`);
+  console.log(`GET Event response: ${eventJSON} and recipient id: ${recipientId}`);
 
   res.render(
     './index',
@@ -28,6 +28,7 @@ router.get('/:eventId', ({params: {eventId}}, res) => {
       demo: process.env.DEMO,
       event: eventJSON,
       title: event.title,
+      recipientId
     }
   );
 });

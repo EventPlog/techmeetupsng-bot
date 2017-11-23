@@ -52,12 +52,14 @@ const giveFeedback = (eventId, userId) => {
   logger.fbLog('payment_step', {step: "start_purchase", event_id: eventId}, userId);
   console.log('Checking in user: ', userId)
   purchase.buyItem(eventId, userId);
+  WebviewControls.close();
 };
 
 /*
- * A component for displaying the Product details for a given product
+ * A component for displag tyinhe Product details for a given product
  */
-const Event = ({id, title, featured_image, description, userId}) => {
+const Event = ({id, title, featured_image, link, organizer, userId}) => {
+  let closeLink = `https://www.messenger.com/closeWindow/?image_url=${featured_image}&display_text=closing`
   return (
     <div>
       <div id='product' className='static-page'>
@@ -66,7 +68,9 @@ const Event = ({id, title, featured_image, description, userId}) => {
             <img className='product-image' src={featured_image}/>
             <div className='product-details'>
               <h1>{title}</h1>
-              <p className='static-page-subtitle'>{description}</p>
+              <p className='static-page-subtitle'>
+                <a href={link}>By: {organizer.name}</a>
+              </p>
             </div>
           </div>
         </div>

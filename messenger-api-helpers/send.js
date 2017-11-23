@@ -86,12 +86,13 @@ const sendPreferencesChangedMessage = (recipientId) => {
 };
 
 // Send a message displaying the events a user can choose from.
-const sendChooseEventMessage = (recipientId) => {
+async function sendChooseEventMessage  (recipientId) {
+  let carouselItems = await messages.eventOptionsCarousel(recipientId);
   sendMessage(
     recipientId,
     [
       messages.eventOptionsText,
-      messages.eventOptionsCarousel(recipientId),
+      carouselItems,
     ]);
 };
 

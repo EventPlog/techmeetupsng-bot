@@ -8,7 +8,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-len */
 
-// require('dotenv').config()
 /*
  * MESSAGES
  *
@@ -23,6 +22,7 @@ import eventsData from '../data/events';
 
 // ===== UTILS =================================================================
 import {dateString} from '../utils/date-string-format';
+import callWebAPI from './webAPI';
 
 const SERVER_URL = process.env.SERVER_URL;
 
@@ -41,7 +41,7 @@ const setPreferencesButton = {
  * Button for displaying the view details button for a event
  */
 const viewDetailsButton = (eventId) => {
-  console.log('view deta')
+  console.log('[view detailsButton] for event id', eventId)
   return {
     title: 'View Details',
     type: 'web_url',
@@ -58,7 +58,7 @@ const chooseEventButton = (eventId) => {
   return {
     title: 'Share feedback',
     type: 'web_url',
-    url: `${SERVER_URL}/feedback/${eventId}`,
+    url: `${SERVER_URL}/feedback/${eventId}?recipientId=353839538402458`,
     webview_height_ratio: 'tall',
     messenger_extensions: true,
   };
@@ -169,10 +169,10 @@ const eventOptionsText = {
  * @param {Object} featured_image - Path to the original image for the event.
  * @returns {Object} Messenger representation of a carousel item.
  */
-const eventToCarouselItem = ({id, title, description, organizer, featured_image}) => {
+const eventToCarouselItem = ({id, title, organizer, featured_image}) => {
   return {
     title,
-    subtitle: 'By ' + organizer,
+    subtitle: 'By ' + organizer.name,
     image_url: featured_image,
     buttons: [
       viewDetailsButton(id),
@@ -188,10 +188,10 @@ const eventToCarouselItem = ({id, title, description, organizer, featured_image}
  * @param {String} recipientId Id of the user to send the message to.
  * @returns {Object} Message payload
  */
-const eventOptionsCarousel = (recipientId) => {
+async function eventOptionsCarousel (recipientId) {
   const user = UserStore.get(recipientId) || UserStore.insert({id: recipientId});
   // const eventOptions = user.getRecommendedEvents();
-  const eventOptions = eventsData;
+  const eventOptions = await(callWebAPI('/events'));
 
   const carouselItems = eventOptions.map(eventToCarouselItem);
 
