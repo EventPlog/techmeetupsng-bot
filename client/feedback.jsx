@@ -194,6 +194,7 @@ export default class App extends React.PureComponent {
         response.status,
         `Unable to save user data for User ${this.props.userId}'`
       );
+      WebviewControls.close();
     }).catch((err) => console.error('Error pushing data', err)).then(() => {
       WebviewControls.close();
     });
@@ -431,7 +432,7 @@ export default class App extends React.PureComponent {
           </Form>
         </section>
         <ButtonArea className='see-options'>
-          <Button onClick={() => this.pushData()}>Submit my feedback</Button>
+          <Button onClick={this.pushData}>Submit my feedback</Button>
         </ButtonArea>
       </div>
     );

@@ -38520,6 +38520,7 @@ var App = function (_React$PureComponent) {
         }
 
         console.error(response.status, 'Unable to save user data for User ' + _this3.props.userId + '\'');
+        _webviewControls2.default.close();
       }).catch(function (err) {
         return console.error('Error pushing data', err);
       }).then(function () {
@@ -38831,9 +38832,7 @@ var App = function (_React$PureComponent) {
           { className: 'see-options' },
           _react2.default.createElement(
             _reactWeui.Button,
-            { onClick: function onClick() {
-                return _this4.pushData();
-              } },
+            { onClick: this.pushData },
             'Submit my feedback'
           )
         )

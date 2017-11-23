@@ -101,7 +101,7 @@ const helloEventsMessage = {
     payload: {
       template_type: 'button',
       text: 'Thank you for letting us help you keep track of tech events.',
-      buttons: [changeEventButton],
+      buttons: [changeEventButton, setPreferencesButton],
     },
   },
 };
