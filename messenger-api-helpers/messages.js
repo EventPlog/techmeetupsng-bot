@@ -45,7 +45,8 @@ const viewDetailsButton = (eventId, userId) => {
   return {
     title: 'View Details',
     type: 'web_url',
-    url: `${SERVER_URL}/user/${userId}/events/${eventId}`,
+    // url: `${SERVER_URL}/users/${userId}/events/${eventId}`,
+    url: `${SERVER_URL}/events/${eventId}`,
     webview_height_ratio: 'compact',
     messenger_extensions: true,
   };
