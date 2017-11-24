@@ -40,12 +40,12 @@ const setPreferencesButton = {
 /*
  * Button for displaying the view details button for a event
  */
-const viewDetailsButton = (eventId) => {
+const viewDetailsButton = (eventId, userId) => {
   console.log('[view detailsButton] for event id', eventId)
   return {
     title: 'View Details',
     type: 'web_url',
-    url: `${SERVER_URL}/events/${eventId}`,
+    url: `${SERVER_URL}/user/${userId}/events/${eventId}`,
     webview_height_ratio: 'compact',
     messenger_extensions: true,
   };
@@ -54,11 +54,11 @@ const viewDetailsButton = (eventId) => {
 /*
  * Button for selecting a event
  */
-const chooseEventButton = (eventId) => {
+const chooseEventButton = (eventId, userId) => {
   return {
     title: 'Share feedback',
     type: 'web_url',
-    url: `${SERVER_URL}/feedback/${eventId}?recipientId=353839538402458`,
+    url: `${SERVER_URL}/${userId}/user/feedback/${eventId}`,
     webview_height_ratio: 'tall',
     messenger_extensions: true,
   };
@@ -165,18 +165,18 @@ const eventOptionsText = {
  *
  * @param {Object} id - The Events unique id.
  * @param {Object} title - The Events name.
- * @param {Object} description - The Events description.
+ * @param {Object} organizer - The Event organizer.
  * @param {Object} featured_image - Path to the original image for the event.
  * @returns {Object} Messenger representation of a carousel item.
  */
-const eventToCarouselItem = ({id, title, organizer, featured_image}) => {
+const eventToCarouselItem = ({id, title, organizer, featured_image}, user) => {
   return {
     title,
     subtitle: 'By ' + organizer.name,
     image_url: featured_image,
     buttons: [
-      viewDetailsButton(id),
-      chooseEventButton(id),
+      viewDetailsButton(id, user.id),
+      chooseEventButton(id, user.id),
     ],
   };
 };
@@ -193,7 +193,7 @@ async function eventOptionsCarousel (recipientId) {
   // const eventOptions = user.getRecommendedEvents();
   const eventOptions = await(callWebAPI('/events'));
 
-  const carouselItems = eventOptions.map(eventToCarouselItem);
+  const carouselItems = eventOptions.map(gift => eventToCarouselItem(gift, user));
 
   return {
     attachment: {
