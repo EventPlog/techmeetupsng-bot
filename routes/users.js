@@ -7,6 +7,7 @@
 
 // ===== MODULES ===============================================================
 import express from 'express';
+import events from './events';
 
 // ===== MESSENGER =============================================================
 import sendApi from '../messenger-api-helpers/send';
@@ -18,8 +19,8 @@ import UserStore from '../stores/user-store';
 const router = express.Router();
 
 // Get user preferences
-router.get('/:userID', ({params: {userID}}, res) => {
-  const user = UserStore.get(userID) || UserStore.insert({id: userID});
+router.get('/:userId', ({params: {userId}}, res) => {
+  const user = UserStore.get(userId) || UserStore.insert({id: userId});
   const userJSON = JSON.stringify(user);
 
   console.log(`GET User response: ${userJSON}`);
@@ -32,37 +33,39 @@ router.get('/:userID', ({params: {userID}}, res) => {
  * Return events based on preferences,
  * and store a user's preferences if `persist` if selected (idempotent)
  */
-router.put('/:userID', ({body, params: {userID}}, res) => {
+router.put('/:userId', ({body, params: {userId}}, res) => {
   if (body.persist) {
-    UserStore.insert({...body, id: userID});
+    UserStore.insert({...body, id: userId});
   }
 
-  const userJSON = JSON.stringify({...body, userID});
+  const userJSON = JSON.stringify({...body, userId});
   console.log(`PUT User response: ${userJSON}`);
 
   res.sendStatus(204);
 
-  sendApi.sendPreferencesChangedMessage(userID);
+  sendApi.sendPreferencesChangedMessage(userId);
 });
+
+router.use('/:userId/events', events);
 
 /**
  * Update a users selected event,
  */
-router.put('/:userID/event/:eventID', ({params: {userID, eventID}}, res) => {
-  console.log('PUT User Event response:', {userID, eventID});
+router.put('/:userId/event/:eventId', ({params: {userId, eventId}}, res) => {
+  console.log('PUT User Event response:', {userId, eventId});
 
   res.sendStatus(204);
-  receiveApi.handleNewEventSelected(userID, eventID);
+  receiveApi.handleNewEventSelected(userId, eventId);
 });
 
 /**
  * Send purchase confirmation into thread.
  */
-router.put('/:userID/purchase/:eventID', ({params: {userID, eventID}}, res) => {
-  console.log('PUT User Purchase response:', {userID, eventID});
+router.put('/:userId/purchase/:eventId', ({params: {userId, eventId}}, res) => {
+  console.log('PUT User Purchase response:', {userId, eventId});
 
   res.sendStatus(204);
-  receiveApi.handleNewEventPurchased(userID, eventID);
+  receiveApi.handleNewEventPurchased(userId, eventId);
 });
 
 
