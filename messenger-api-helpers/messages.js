@@ -45,7 +45,8 @@ const viewDetailsButton = (eventId, userId) => {
   return {
     title: 'View Details',
     type: 'web_url',
-    url: `${SERVER_URL}/user/${userId}/events/${eventId}`,
+    url: `${SERVER_URL}/users/${userId}/events/${eventId}`,
+    // url: `${SERVER_URL}/events/${eventId}`,
     webview_height_ratio: 'compact',
     messenger_extensions: true,
   };
@@ -191,9 +192,9 @@ const eventToCarouselItem = ({id, title, organizer, featured_image}, user) => {
 async function eventOptionsCarousel (recipientId) {
   const user = UserStore.get(recipientId) || UserStore.insert({id: recipientId});
   // const eventOptions = user.getRecommendedEvents();
-  const eventOptions = await(callWebAPI('/events'));
+  const eventOptions = await(callWebAPI(`/users/${recipientId}/events`));
 
-  const carouselItems = eventOptions.map(gift => eventToCarouselItem(gift, user));
+  const carouselItems = eventOptions.events.map(gift => eventToCarouselItem(gift, user));
 
   return {
     attachment: {

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import events from '../data/events';
+import callWebAPI from '../messenger-api-helpers/webAPI';
 
 // ===== MODULES ===============================================================
 import express from 'express';
@@ -12,14 +13,13 @@ import express from 'express';
 // ===== STORES ================================================================
 import EventStore from '../stores/event-store';
 
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
-// Get Event page
-router.get('/:eventId', ({params: {eventId}, query: {recipientId}}, res) => {
+async function eventsCallback({params: {eventId, userId}}, res) {
   // const event = EventStore.get(eventId);
-  const event = events[0];
-  const eventJSON = JSON.stringify(events[0]);
-  console.log(`GET Event response: ${eventJSON} and recipient id: ${recipientId}`);
+  const event = await(callWebAPI(`/users/${userId}/events/${eventId}`));
+  const eventJSON = JSON.stringify(event);
+  console.log(`GET Event response: ${eventJSON}`);
 
   res.render(
     './index',
@@ -27,9 +27,11 @@ router.get('/:eventId', ({params: {eventId}, query: {recipientId}}, res) => {
       demo: process.env.DEMO,
       event: eventJSON,
       title: event.title,
-      recipientId
+      userId
     }
   );
-});
+}
+// Get Event page
+router.get('/:eventId', eventsCallback);
 
 export default router;
