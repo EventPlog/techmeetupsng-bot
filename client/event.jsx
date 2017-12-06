@@ -29,6 +29,7 @@ import {
 
 /* ----------  Internal Imports  ---------- */
 
+import Loading from './loading';
 import WebviewControls from '../messenger-api-helpers/webview-controls';
 import purchase from './purchase';
 import logger from './fba-logging';
@@ -89,7 +90,7 @@ class Event extends React.Component {
 
   render () {
 
-    if (!this.state.props) {
+    if (!this.props) {
       return <Loading />;
     }
 
