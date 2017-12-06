@@ -17,33 +17,38 @@
      <% } else { %>
      const event = null;
      <% } %>
-     <% if (locals.feedback) { %>
-     const feedback = JSON.parse('<%- locals.feedback  %>');
+     <% if (locals.isFeedback) { %>
+     const isFeedback = JSON.parse('<%- locals.isFeedback  %>');
      <% } else { %>
-     const feedback = null;
+     const isFeedback = null;
      <% } %>
      <% if (demo) { %>
        window.attachApp("demo", event);
      <% } else if (typeof terms !== 'undefined' && terms) { %>
        window.attachTerms()
+     <% } else if (typeof isEvent !== 'undefined' && isEvent) { %>
+       window.attachEvent(JSON.parse(<%- locals.userId %>), event);
+     <% } else if (typeof isFeedback !== 'undefined' && isFeedback) { %>
+       window.attachFeedback(userId, event);
      <% } else { %>
-       window.extAsyncInit = function() {
-         // the Messenger Extensions JS SDK is done loading
-         MessengerExtensions.getUserID(function success(uids) {
-           console.log('[getUserID] feedback is defined', )
-           if(uids.psid) {
-             return window.attachFeedback(uids.psid, event);
-           }
-           window.attachApp(uids.psid, event, recipientId);
-         }, function error(err) {
-           console.log('error in retrieveing user id', err);
-           console.log('feedback is defined')
-           if(typeof feedback !== 'undefined' && feedback) {
-             window.attachFeedback(null, event);
-           } else {
-             window.attachApp();
-           }
-         });
+       window.attachApp();
+//       window.extAsyncInit = function() {
+//         // the Messenger Extensions JS SDK is done loading
+//         MessengerExtensions.getUserID(function success(uids) {
+//           console.log('[getUserID] isFeedback is defined', uids)
+//           if(uids.psid) {
+//             return window.attachFeedback(uids.psid, event);
+//           }
+//           window.attachApp(uids.psid, event, recipientId);
+//         }, function error(err) {
+//           console.log('error in retrieveing user id', err);
+//           console.log('isFeedback is defined')
+//           if(typeof isFeedback !== 'undefined' && isFeedback) {
+//             window.attachFeedback(null, event);
+//           } else {
+//             window.attachApp();
+//           }
+//         });
        };
 
        (function(doc, script, domId){

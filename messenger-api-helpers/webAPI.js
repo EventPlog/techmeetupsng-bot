@@ -28,10 +28,11 @@ function requestHeaders() {
 * @param {Object} data: eg {id: 1}
 * @return {Object} fetch: to be used in views that check for success or failure
 */
-function processRequest(path, method='GET', data = {}) {
+function processRequest(path, method='GET', data = {}, homeURL=false) {
   console.log("[webAPI.processRequest] calling %s with %s method and data: %s",
                 path, method, data);
-  let url = process.env.TMN_API + requestPath(path, method, data);
+  let hostAPI = !homeURL && process.env.TMN_API ? process.env.TMN_API : '';
+  let url = hostAPI + requestPath(path, method, data);
   return fetch(url, {
     method  : method,
     headers : requestHeaders(),
@@ -44,14 +45,6 @@ function processRequest(path, method='GET', data = {}) {
     console.log("[webAPI.processRequest] API call failed for %s. %s", url, err);
     // throw (err);
   });
-
-  // return request({
-  //   uri: url,
-  //   method: 'GET'
-  // }, (error, response, body) => {
-  //   console.log("[webAPI.processRequest] response: %o", response)
-  //   return response.json()
-  // })
 }
 
 module.exports = processRequest;

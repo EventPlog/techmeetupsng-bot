@@ -28,7 +28,7 @@ router.get('/:eventId', ({params: {eventId}}, res) => {
       demo: false,
       event: eventJSON,
       title: 'Feedback on ' + event.title,
-      feedback: true
+      isFeedback: true
     }
   );
 });

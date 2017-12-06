@@ -14,6 +14,7 @@
  *  @returns {undefined}
  */
 const close = () => {
+  return;
   window.MessengerExtensions.requestCloseBrowser(function success() {
     return;
   }, function error(err) {

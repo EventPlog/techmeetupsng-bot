@@ -286,7 +286,8 @@ section {
   flex-direction: row;
   margin: auto;
   max-width: 600px;
-  padding: 1rem 1rem 6rem;
+  padding: 1rem;
+  text-align: left;
 }
 
 .product-details {
@@ -351,4 +352,16 @@ section {
 .indicator img {
   width: 1.3rem;
   height: 1.3rem;
+}
+
+button.attending {
+  /*background: mediumseagreen !important;*/
+}
+
+.panel {
+  text-align: left;
+}
+
+.panel:last-child {
+  padding-bottom: 6rem;
 }

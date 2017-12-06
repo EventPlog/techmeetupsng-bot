@@ -6,11 +6,14 @@
  */
 
 // ===== LODASH ================================================================
-import castArray from 'lodash/castArray';
-import isEmpty from 'lodash/isEmpty';
+// import castArray from 'lodash/castArray';
+// import isEmpty from 'lodash/isEmpty';
+const castArray = require('lodash/castArray');
+const isEmpty = require('lodash/isEmpty');
 
 // ===== MODULES ===============================================================
-import request from 'request';
+// import request from 'request';
+const request = require('request');
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 
@@ -42,6 +45,7 @@ const callAPI = (endPoint, messageDataArray, queryParams = {}, retries = 5) => {
 
   // ensure query parameters have a PAGE_ACCESS_TOKEN value
   /* eslint-disable camelcase */
+  let access_token = process.env.PAGE_ACCESS_TOKEN;
   const query = Object.assign({access_token: PAGE_ACCESS_TOKEN}, queryParams);
   /* eslint-enable camelcase */
 
@@ -50,6 +54,7 @@ const callAPI = (endPoint, messageDataArray, queryParams = {}, retries = 5) => {
   request({
     uri: `https://graph.facebook.com/v2.6/me/${endPoint}`,
     qs: query,
+    mode: 'cors',
     method: 'POST',
     json: messageToSend,
 
