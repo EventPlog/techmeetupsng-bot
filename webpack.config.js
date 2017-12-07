@@ -1,10 +1,14 @@
 /* eslint-disable */
-// require('dotenv').config()
+if (process.env.NODE_ENV == 'development') {
+  require('dotenv').config();
+}
 
 var path = require('path');
 const webpack = require('webpack');
 
+console.log('the access tokens: ', JSON.stringify(process.env.PAGE_ACCESS_TOKEN))
 module.exports = [{
+  devtool: 'cheap-module-eval-source-map',
   context: path.join(__dirname),
   entry: 'index',
   output: {
@@ -18,7 +22,8 @@ module.exports = [{
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: 'babel-loader'
-      }
+      },
+      { test: /\.json$/, loader: 'json-loader' }
     ]
   },
   resolve: {
@@ -33,7 +38,15 @@ module.exports = [{
       'process.env': {
         APP_ID: JSON.stringify(process.env.APP_ID),
         PAGE_ID: JSON.stringify(process.env.PAGE_ID),
+        SERVER_URL: JSON.stringify(process.env.SERVER_URL),
+        TMN_API: JSON.stringify(process.env.TMN_API),
+        PAGE_ACCESS_TOKEN: JSON.stringify(process.env.PAGE_ACCESS_TOKEN)
       },
     })
-  ]
+  ],
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  }
 }];

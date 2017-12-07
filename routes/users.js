@@ -51,7 +51,7 @@ router.use('/:userId/events', events);
 /**
  * Update a users selected event,
  */
-router.put('/:userId/event/:eventId', ({params: {userId, eventId}}, res) => {
+router.patch('/:userId/event/:eventId', ({params: {userId, eventId}}, res) => {
   console.log('PUT User Event response:', {userId, eventId});
 
   res.sendStatus(204);

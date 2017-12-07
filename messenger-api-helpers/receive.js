@@ -22,7 +22,7 @@ const handleNewEventSelected = (senderId, eventId) => {
 
 // Thanks user for purchasing event.
 const handleNewEventPurchased = (senderId, eventId) => {
-  sendApi.sendEventPurchasedMessage(senderId, eventId);
+  sendApi.sendEventRegisteredMessage(senderId, eventId);
 };
 
 

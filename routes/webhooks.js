@@ -53,7 +53,6 @@ router.post('/', (req, res) => {
     awhile to process.
   */
   res.sendStatus(200);
-  console.log('received message: ', res)
 
   const data = req.body;
 
@@ -64,7 +63,6 @@ router.post('/', (req, res) => {
     data.entry.forEach((pageEntry) => {
       // Iterate over each messaging event and handle accordingly
       pageEntry.messaging.forEach((messagingEvent) => {
-        console.log({messagingEvent});
         if (messagingEvent.message) {
           receiveApi.handleReceiveMessage(messagingEvent);
         } else if (messagingEvent.postback) {

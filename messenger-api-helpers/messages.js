@@ -47,7 +47,7 @@ const viewDetailsButton = (eventId, userId) => {
     type: 'web_url',
     url: `${SERVER_URL}/users/${userId}/events/${eventId}`,
     // url: `${SERVER_URL}/events/${eventId}`,
-    webview_height_ratio: 'compact',
+    webview_height_ratio: 'tall',
     messenger_extensions: true,
   };
 };
@@ -221,15 +221,30 @@ const eventChangedMessage = (recipientId) => {
 };
 
 /**
- * Message thanking user for their purchase.
+ * Message pointing users to the registration spot
  *
- * @param {String} eventId Id of the purchased item.
+ * @param {String} event Id of the purchased item.
  * @returns {Object} Message payload
  */
-const eventPurchasedMessage = (eventId) => {
-  const purchasedItem = EventStore.get(eventId);
+const eventRegisteredMessage = (event) => {
+  // const purchasedItem = EventStore.get(eventId);
   return {
-    text: `Thank you for purchasing the ${purchasedItem.name}!  `,
+    text: `Okay, I've added ${event.title} to your events :)` +
+          `\n\nVisit the link: ${event.link} to register with the organizers.`,
+  };
+};
+
+/**
+ * Message thanking users for checking in
+ *
+ * @param {String} event Id of the purchased item.
+ * @returns {Object} Message payload
+ */
+const eventCheckedInMessage = (event) => {
+  // const purchasedItem = EventStore.get(eventId);
+  return {
+    text: `You've successfully checked into the event: "${event.title}"` +
+    `\n\nRemember to give feedback! :)`
   };
 };
 
@@ -268,7 +283,8 @@ export default {
   eventOptionsText,
   eventOptionsCarousel,
   eventChangedMessage,
-  eventPurchasedMessage,
+  eventRegisteredMessage,
+  eventCheckedInMessage,
   persistentMenu,
   getStarted,
 };

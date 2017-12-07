@@ -50,15 +50,14 @@ window.attachTerms = () => {
 };
 
 // Simple initializer for attaching the Event Page to the DOM
-window.attachEvent = (event, userId) => {
-  console.log('[window.attachEvent] Attaching event: ', event)
+window.attachEvent = (userId, event) => {
+  console.log("[window.attachEvent] for user id %s Attaching event: %o", userId, event)
   const app = userId
     ? <Event {...event} userId={userId} />
     : <Oops />;
 
   ReactDOM.render(app, document.getElementById('content'));
 };
-
 
 // Simple initializer for attaching the Preferences App to the DOM
 window.attachFeedback = (userId, event) => {

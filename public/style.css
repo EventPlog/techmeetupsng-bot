@@ -286,7 +286,8 @@ section {
   flex-direction: row;
   margin: auto;
   max-width: 600px;
-  padding: 1rem 1rem 6rem;
+  padding: 1rem;
+  text-align: left;
 }
 
 .product-details {
@@ -351,4 +352,22 @@ section {
 .indicator img {
   width: 1.3rem;
   height: 1.3rem;
+}
+
+button.check-in {
+  /*background: mediumseagreen !important;*/
+  background-color: #1aad19;
+}
+
+.panel {
+  text-align: left;
+}
+
+.panel:last-child {
+  padding-bottom: 6rem;
+}
+
+span.agenda-speaker-prefix {
+  float: left;
+  padding-right: 1em;
 }

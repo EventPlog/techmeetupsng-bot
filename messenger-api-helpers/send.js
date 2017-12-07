@@ -101,9 +101,12 @@ const sendEventChangedMessage = (recipientId) =>
   sendMessage(recipientId, messages.eventChangedMessage(recipientId));
 
 // Send a message that a user has purchased a event.
-const sendEventPurchasedMessage = (recipientId, eventId) =>
-  sendMessage(recipientId, messages.eventPurchasedMessage(eventId));
+const sendEventRegisteredMessage = (recipientId, event) =>
+  sendMessage(recipientId, messages.eventRegisteredMessage(event));
 
+// Send a message that a user has purchased a event.
+const sendEventCheckedInMessage = (recipientId, event) =>
+  sendMessage(recipientId, messages.eventCheckedInMessage(event));
 
 export default {
   sendMessage,
@@ -112,5 +115,6 @@ export default {
   sendPreferencesChangedMessage,
   sendChooseEventMessage,
   sendEventChangedMessage,
-  sendEventPurchasedMessage,
+  sendEventRegisteredMessage,
+  sendEventCheckedInMessage,
 };
