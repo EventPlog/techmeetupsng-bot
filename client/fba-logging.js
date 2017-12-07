@@ -17,6 +17,10 @@
  * @param {string} psid - PSID of user who triggered the event.
  * @returns {undefined}
  */
+
+const PAGE_ID = process.env.PAGE_ID;
+const APP_ID = process.env.APP_ID;
+
 const fbLog = (eventName, payload, psid) => {
   if (payload !== null && typeof payload === 'object') {
     payload["_eventName"] = eventName;
@@ -26,11 +30,11 @@ const fbLog = (eventName, payload, psid) => {
       advertiser_tracking_enabled: 0,
       application_tracking_enabled: 0,
       extinfo: JSON.stringify(['mb1']),
-      page_id: process.env.PAGE_ID,
+      page_id: PAGE_ID,
       page_scoped_user_id: psid
     });
 
-    fetch("https://graph.facebook.com/v2.6/" + process.env.APP_ID + "/activities", {
+    fetch("https://graph.facebook.com/v2.6/" + APP_ID + "/activities", {
         method: 'post',
         headers: {
             'Accept': 'application/json, text/plain, */*',

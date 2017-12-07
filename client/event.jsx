@@ -61,6 +61,7 @@ class Event extends React.Component {
 
   componentWillMount() {
     this.setEventState(this.props);
+    logger.fbLog('view_event_page', {event_id: this.props.id, title: this.props.title}, this.props.userId);
   }
 
   setEventState = (event) => {
@@ -69,13 +70,14 @@ class Event extends React.Component {
   }
 
   async attendEvent (userId, event) {
-    // logger.fbLog('select_event_start', {event_id: eventId}, userId);
+    logger.fbLog('attend_event_start', {event_id: event.id, title: event.title}, userId);
     this.setState({showLoading: true});
     try {
       let response = await processRequest(`/users/${userId}/events/${event.id}`, 'PUT', {}, true);
       if (response.id) {
         this.setEventState(response);
         this.showSuccessToast();
+        logger.fbLog('attend_event_success', {event_id: response.id, title: response.title}, userId);
       }
     }
     catch(err) {
@@ -85,19 +87,20 @@ class Event extends React.Component {
   };
 
   async checkIn (userId, event) {
+    logger.fbLog('check_in_event_start', {event_id: event.id, title: event.title}, userId);
     this.setState({showLoading: true});
     try {
       let response = await processRequest(`/users/${userId}/events/${event.id}/check_in`, 'POST', {}, true);
       if (response.id) {
         this.setEventState(response);
         this.showSuccessToast();
+        logger.fbLog('check_in_event_success', {event_id: response.id, title: response.title}, userId);
       }
     }
     catch(err) {
       console.error(`Unable to check into event event for user ${userId}. `, err);
       this.setState({showLoading: false});
     }
-    WebviewControls.close();
   };
 
   showSuccessToast = () => {
