@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "babel-cli": "^6.23.0",
+    "babel-loader": "7.1.2",
     "babel-plugin-module-resolver": "^2.5.0",
     "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-transform-class-properties": "^6.23.0",
@@ -64,7 +65,6 @@
   },
   "devDependencies": {
     "babel-core": "6.26.0",
-    "babel-loader": "7.1.2",
     "chai": "^3.5.0",
     "dotenv": "^4.0.0",
     "eslint-config-metalab": "^5.0.1",
