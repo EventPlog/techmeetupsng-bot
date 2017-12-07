@@ -366,3 +366,8 @@ button.check-in {
 .panel:last-child {
   padding-bottom: 6rem;
 }
+
+span.agenda-speaker-prefix {
+  float: left;
+  padding-right: 1em;
+}

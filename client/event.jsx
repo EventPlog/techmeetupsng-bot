@@ -147,6 +147,7 @@ class Event extends React.Component {
                         {item.description}
                       </MediaBoxDescription>
                       <MediaBoxInfo>
+                        <span className="agenda-speaker-prefix">By</span>
                         {
                           item.speakers.map(speaker =>
                               <MediaBoxInfoMeta extra>{speaker.full_name}</MediaBoxInfoMeta>
