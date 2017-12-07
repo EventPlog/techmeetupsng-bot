@@ -25,6 +25,7 @@ import {
   MediaBoxDescription,
   MediaBoxInfo,
   MediaBoxInfoMeta,
+  Toast,
 } from 'react-weui';
 
 /* ----------  Internal Imports  ---------- */
@@ -50,7 +51,9 @@ class Event extends React.Component {
     super(props);
     this.state = {
       isAttending: false,
-      checkedInAt: false
+      checkedInAt: false,
+      showLoading: false,
+      showToast: false
     };
     this.attendEvent = this.attendEvent.bind(this);
     this.checkIn = this.checkIn.bind(this);
@@ -67,26 +70,43 @@ class Event extends React.Component {
 
   async attendEvent (userId, event) {
     // logger.fbLog('select_event_start', {event_id: eventId}, userId);
+    this.setState({showLoading: true});
     try {
       let response = await processRequest(`/users/${userId}/events/${event.id}`, 'PUT', {}, true);
-      if (response.id) this.setEventState(response);
+      if (response.id) {
+        this.setEventState(response);
+        this.showSuccessToast();
+      }
     }
     catch(err) {
       console.error(`Unable to register event for user ${userId}. `, err);
+      this.setState({showLoading: false});
+    }
+  };
+
+  async checkIn (userId, event) {
+    this.setState({showLoading: true});
+    try {
+      let response = await processRequest(`/users/${userId}/events/${event.id}/check_in`, 'POST', {}, true);
+      if (response.id) {
+        this.setEventState(response);
+        this.showSuccessToast();
+      }
+    }
+    catch(err) {
+      console.error(`Unable to check into event event for user ${userId}. `, err);
+      this.setState({showLoading: false});
     }
     WebviewControls.close();
   };
 
-  async checkIn (userId, event) {
-    try {
-      let response = await processRequest(`/users/${userId}/events/${event.id}/check_in`, 'POST', {}, true);
-      if (response.id) this.setEventState(response);
-    }
-    catch(err) {
-      console.error(`Unable to check into event event for user ${userId}. `, err);
-    }
-    WebviewControls.close();
-  };
+  showSuccessToast = () => {
+    this.setState({showLoading: false, showToast: true});
+
+    this.state.toastTimer = setTimeout(()=> {
+      this.setState({showToast: false});
+    }, 2000);
+  }
 
   render () {
 
@@ -95,7 +115,7 @@ class Event extends React.Component {
     }
 
     const {id, title, featured_image, description, link, organizer, speakers, agenda, userId} = this.props;
-    const { isAttending, checkedInAt } = this.state;
+    const { isAttending, checkedInAt, showLoading, showToast } = this.state;
     let attendBtnText = isAttending ? 'Attending' : 'Attend Event';
     let checkedInBtnText = checkedInAt ? 'Checked In' : 'Check In';
     return (
@@ -163,17 +183,20 @@ class Event extends React.Component {
           </div>
         </div>
 
+        <Toast icon="success-no-circle" show={this.state.showToast}>Done</Toast>
+        <Toast icon="loading" show={this.state.showLoading}>Sending request...</Toast>
+
         <ButtonArea className='see-options' direction='horizontal'>
-          <Button onClick={() => this.attendEvent(userId, event)}
+          {!isAttending && <Button onClick={() => this.attendEvent(userId, event)}
                   disabled={isAttending}
                   className={isAttending ? 'attending' : ''}>
             {attendBtnText}
-          </Button>
-          <Button onClick={() => this.checkIn(userId, event)}
+          </Button>}
+          {isAttending && <Button onClick={() => this.checkIn(userId, event)}
                   disabled={checkedInAt}
-                  className={checkedInAt ? 'checked-in' : ''}>
+                  className={checkedInAt ? 'checked-in' : 'check-in'}>
             Check In
-          </Button>
+          </Button>}
         </ButtonArea>
       </div>
     );

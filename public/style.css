@@ -354,8 +354,9 @@ section {
   height: 1.3rem;
 }
 
-button.attending {
+button.check-in {
   /*background: mediumseagreen !important;*/
+  background-color: #1aad19;
 }
 
 .panel {
