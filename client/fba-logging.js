@@ -22,7 +22,6 @@ const PAGE_ID = process.env.PAGE_ID;
 const APP_ID = process.env.APP_ID;
 
 const fbLog = (eventName, payload, psid) => {
-  console.log("APP ID IN PROD: %s, PAGE ID: %s", APP_ID, PAGE_ID);
   if (payload !== null && typeof payload === 'object') {
     payload["_eventName"] = eventName;
     const body = JSON.stringify({
