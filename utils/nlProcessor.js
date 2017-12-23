@@ -1,9 +1,9 @@
 import sendApi from '../messenger-api-helpers/send';
 import LocationProcessor from './nlEntityProcessors/locationProcessor';
-import EventProcessor from './nlEntityProcessors/EventProcessor';
+import EventProcessor from './nlEntityProcessors/eventProcessor';
 import EmailProcessor from './nlEntityProcessors/emailProcessor';
 import GreetingsProcessor from './nlEntityProcessors/greetingsProcessor';
-import GoodbyeProcessor from './nlEntityProcessors/GoodbyeProcessor';
+import GoodbyeProcessor from './nlEntityProcessors/goodbyeProcessor';
 import DateTimeProcessor from './nlEntityProcessors/dateTimeProcessor';
 import InterestsProcessor from './nlEntityProcessors/interestsProcessor';
 
