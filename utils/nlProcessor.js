@@ -19,19 +19,24 @@ const CASES = [
 
 class NLProcessor {
   static nlpCheck (recipientId, message) {
-    const {nlp: {entities}} = message;
-    const nlp_entities = Object.keys(entities);
+    try {
+      const {nlp: {entities}} = message;
+      const nlp_entities = Object.keys(entities);
 
-    let caseIndex;
-    if(nlp_entities.length > 0) {
-      return CASES.some(nlp_case => {
-        caseIndex = nlp_entities.indexOf(nlp_case);
-        if (caseIndex == -1 || !this.entityIsSure(entities[nlp_case][0])) return;
-        this.checkEntity(recipientId, nlp_case, entities[nlp_case][0], message)
-        return true;
-      })
+      let caseIndex;
+      if (nlp_entities.length > 0) {
+        return CASES.some(nlp_case => {
+          caseIndex = nlp_entities.indexOf(nlp_case);
+          if (caseIndex == -1 || !this.entityIsSure(entities[nlp_case][0])) return;
+          this.checkEntity(recipientId, nlp_case, entities[nlp_case][0], message)
+          return true;
+        })
+      }
+      return this.defaultMessage(recipientId, message)
     }
-    return this.defaultMessage(recipientId, message)
+    catch(e)  {
+      this.defaultMessage(recipientId, message)
+    }
   }
 
   static entityIsSure(entity) {
