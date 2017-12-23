@@ -19,7 +19,8 @@
     "lint-js": "eslint . --ignore-path ./public/bundle.js",
     "lint-css": "recess ./public/style.css --noIDs false --noUnderscores false",
     "test": "mocha --timeout 10000 --compilers js:babel-core/register --recursive",
-    "quality": "yarn lint-js; yarn lint-css; yarn test"
+    "quality": "yarn lint-js; yarn lint-css; yarn test",
+    "ngrok": "ngrok http 7000"
   },
   "dependencies": {
     "babel-cli": "^6.23.0",
@@ -53,9 +54,10 @@
     "lodash": "^4.17.4",
     "morgan": "~1.7.0",
     "nodemon": "^1.11.0",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-weui": "^1.0.3",
+    "proptypes": "^1.1.0",
+    "react": "16",
+    "react-dom": "16",
+    "react-weui": "1.1.3",
     "recess": "^1.1.9",
     "request": "^2.83.0",
     "serve-favicon": "~2.3.0",

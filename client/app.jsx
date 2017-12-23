@@ -15,6 +15,7 @@
 
 import React from 'react';
 import 'whatwg-fetch';
+import PropTypes from 'proptypes';
 
 /* ----------  External UI Kit  ---------- */
 
@@ -136,7 +137,7 @@ export default class App extends React.PureComponent {
   /* ----------  React Configuration  ---------- */
 
   static propTypes = {
-    userId: React.PropTypes.string.isRequired,
+    userId: PropTypes.string.isRequired,
   }
 
   state = {

@@ -1,9 +1,19 @@
 const config = require('../config/default.json');
 const fetch = require('isomorphic-fetch');
 
+const serialize = (obj) => {
+  var queryStr = [];
+  for(let param in obj) {
+    if (obj.hasOwnProperty(param)) {
+      queryStr.push(encodeURIComponent(param) + "=" + encodeURIComponent(obj[param]));
+    }
+  }
+  return queryStr.join("&");
+}
+
 const requestPath = (path, method, data = {}) => {
-  if (method === 'GET' && data.length > 0) {
-    return path + '?' + encodeURIComponent(JSON.stringify(data));
+  if (method === 'GET' && Object.keys(data).length > 0) {
+    return path + '?' + serialize(data);
   }
   return path;
 };
@@ -26,6 +36,7 @@ function requestHeaders() {
 * @param {String} path: eg '/questions'
 * @param {String} method: eg 'POST'
 * @param {Object} data: eg {id: 1}
+ *@param {Boolean} homeURL
 * @return {Object} fetch: to be used in views that check for success or failure
 */
 function processRequest(path, method='GET', data = {}, homeURL=false) {

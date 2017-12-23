@@ -10,6 +10,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Toast} from 'react-weui';
+import PropTypes from 'proptypes';
 
 // Simple loading spinner
 
@@ -18,7 +19,7 @@ const Loading = ({text = 'Loading...'}) => {
 };
 
 Loading.propsTypes = {
-  text: React.PropTypes.string,
+  text: PropTypes.string,
 };
 
 export default Loading;

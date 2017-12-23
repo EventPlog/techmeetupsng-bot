@@ -69,9 +69,9 @@ export default class User {
    * @property {Array.<string>} - Level of humidity in environment
    */
   static RATING = [
-    'Not much',
-    'Average',
-    'Very much',
+    'Not true',
+    'Somewhat true',
+    'Very true',
   ];
 
   /**

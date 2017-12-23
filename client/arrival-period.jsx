@@ -9,7 +9,7 @@
 
 import React from 'react';
 import {CellBody, CellFooter, CellHeader, FormCell, Radio} from 'react-weui';
-
+import PropTypes from 'proptypes';
 import SelectedIndicator from './selected-indicator';
 
 /**
@@ -38,10 +38,10 @@ const ArrivalPeriod = ({label, value, selected, setArrivalPeriod}) => {
 };
 
 ArrivalPeriod.propTypes = {
-  label: React.PropTypes.string.isRequired,
-  value: React.PropTypes.string.isRequired,
-  selected: React.PropTypes.bool.isRequired,
-  setArrivalPeriod: React.PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  selected: PropTypes.bool.isRequired,
+  setArrivalPeriod: PropTypes.func.isRequired,
 };
 
 export default ArrivalPeriod;

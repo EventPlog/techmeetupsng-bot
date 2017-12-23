@@ -16,14 +16,14 @@ import ReactDOM from 'react-dom';
 
 import App from './app.jsx';
 import Oops from './oops.jsx';
-import Event from './event.jsx';
+import Event from './event/event.jsx';
 import Feedback from './feedback';
 import Terms from './terms.jsx';
 
 /* ----------  Styles  ---------- */
 
 import 'weui';
-import 'react-weui/lib/react-weui.min.css';
+import 'react-weui/build/packages/react-weui.css';
 import '../public/style.css';
 
 // Simple initializer for attaching the Preferences App to the DOM

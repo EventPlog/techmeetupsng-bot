@@ -22,7 +22,6 @@ import eventsData from '../data/events';
 
 // ===== UTILS =================================================================
 import {dateString} from '../utils/date-string-format';
-import callWebAPI from './webAPI';
 
 const SERVER_URL = process.env.SERVER_URL;
 
@@ -157,7 +156,7 @@ const currentEventButton = (recipientId) => {
  * Message that precedes us displaying recommended events.
  */
 const eventOptionsText = {
-  text: 'Here are the most recent tech events around you',
+  text: 'Pulling up a list of events you might like ...',
 };
 
 /**
@@ -189,12 +188,11 @@ const eventToCarouselItem = ({id, title, organizer, featured_image}, user) => {
  * @param {String} recipientId Id of the user to send the message to.
  * @returns {Object} Message payload
  */
-async function eventOptionsCarousel (recipientId) {
+const eventOptionsCarousel = (recipientId, events) => {
   const user = UserStore.get(recipientId) || UserStore.insert({id: recipientId});
   // const eventOptions = user.getRecommendedEvents();
-  const eventOptions = await(callWebAPI(`/users/${recipientId}/events`));
 
-  const carouselItems = eventOptions.events.map(gift => eventToCarouselItem(gift, user));
+  const carouselItems = events.map(gift => eventToCarouselItem(gift, user));
 
   return {
     attachment: {
@@ -214,9 +212,10 @@ async function eventOptionsCarousel (recipientId) {
  * @returns {Object} Message payload
  */
 const eventChangedMessage = (recipientId) => {
-  const {preferredEvent, dateOfBirth} = UserStore.get(recipientId);
+  // const {preferredEvent, dateOfBirth} = UserStore.get(recipientId);
   return {
-    text: `Perfect! You can look forward to the ${preferredEvent.name} on ${dateString(dateOfBirth)}. `,
+    // text: `Perfect! You can look forward to the ${preferredEvent.name} on ${dateString(dateOfBirth)}. `,
+    text: `Hey, we don't have your email address yet. Could you help out? Thanks`,
   };
 };
 
@@ -245,6 +244,18 @@ const eventCheckedInMessage = (event) => {
   return {
     text: `You've successfully checked into the event: "${event.title}"` +
     `\n\nRemember to give feedback! :)`
+  };
+};
+
+/**
+ * Message thanking users for checking in
+ *
+ * @param {String} event Id of the purchased item.
+ * @returns {Object} Message payload
+ */
+const feedbackSentMessage = (event) => {
+  return {
+    text: `Thank you for contributing towards improving tech events by sharing feedback. Organizers really, really appreciate."`
   };
 };
 
@@ -285,6 +296,7 @@ export default {
   eventChangedMessage,
   eventRegisteredMessage,
   eventCheckedInMessage,
+  feedbackSentMessage,
   persistentMenu,
   getStarted,
 };

@@ -9,6 +9,7 @@
 
 import React from 'react';
 import {CellBody, CellHeader, Checkbox, FormCell} from 'react-weui';
+import PropTypes from 'proptypes';
 
 /**
  * Component for a single skin type option
@@ -38,11 +39,11 @@ const SkinType = ({label, value, checked, addSkinType, removeSkinType}) => {
 };
 
 SkinType.propTypes = {
-  label: React.PropTypes.string.isRequired,
-  value: React.PropTypes.string.isRequired,
-  checked: React.PropTypes.bool.isRequired,
-  addSkinType: React.PropTypes.func.isRequired,
-  removeSkinType: React.PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  checked: PropTypes.bool.isRequired,
+  addSkinType: PropTypes.func.isRequired,
+  removeSkinType: PropTypes.func.isRequired,
 };
 
 export default SkinType;
