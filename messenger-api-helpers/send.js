@@ -96,9 +96,8 @@ const sendEventNotFoundMessage = ({user, events}) => {
 const sendChooseEventMessage = async (recipientId, params={}) => {
   const {user, events} = await EventsController.index(recipientId, params);
   if(!events || events.length < 1) {
-    let locations = user && user.locations.length > 0 ? ' in ' + user.locations.map(loc => loc.state).join(','): '';
     return sendTextMessage(recipientId,
-      `404! I couldn't find any matching events${locations} at this time. :(`);
+      `404! I couldn't find any matching events at this time. :(`);
   }
 
   let carouselItems = messages.eventOptionsCarousel(recipientId, events);
