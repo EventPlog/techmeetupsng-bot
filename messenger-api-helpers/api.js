@@ -68,7 +68,7 @@ const callAPI = (endPoint, messageDataArray, queryParams = {}, retries = 5) => {
 
       // Continue sending payloads until queue empty.
       if (!isEmpty(queue)) {
-        callAPI(endPoint, queue, queryParams);
+        setTimeout(() => callAPI(endPoint, queue, queryParams), 3000);
       }
     } else {
       // Message has not been successfully received by Facebook.

@@ -35,7 +35,7 @@ const nth = (day) => {
  * @param {Boolean} includeYear If true append year
  * @returns {String} Formatted date.
  */
-export const dateString = (date, includeYear = false) => {
+const dateString = (date, includeYear = false) => {
   // Prevent daylight savings from interfering with date
   const normalizedDate = `${date}T12:30:30.30`;
   const dateObj = new Date(normalizedDate);
@@ -53,3 +53,27 @@ export const dateString = (date, includeYear = false) => {
 
   return `${month} ${day}${optionalYear}`;
 };
+
+const addDaysToDate = (date, days) => {
+  let dat = new Date(date.valueOf());
+  dat.setDate(dat.getDate() + days);
+  return dat;
+}
+
+const daysInMonth = (month, year) => {
+  return new Date(year, month, 0).getDate() - 1;
+}
+
+const daysInYear = (year) => {
+  return isLeapYear(year) ? 366 : 365;
+}
+
+const isLeapYear = (year) => {
+  return year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0);
+}
+export {
+  dateString,
+  addDaysToDate,
+  daysInMonth,
+  daysInYear
+}

@@ -9,7 +9,7 @@
 
 import React from 'react';
 import {CellBody, CellFooter, CellHeader, FormCell, Radio, Select} from 'react-weui';
-
+import PropTypes from 'proptypes';
 import SelectedIndicator from './selected-indicator.jsx';
 
 /**
@@ -41,11 +41,11 @@ const EventCategory = ({title, subtitle, image, selected, setEventCategory}) => 
 };
 
 EventCategory.propTypes = {
-  title: React.PropTypes.string.isRequired,
-  subtitle: React.PropTypes.string.isRequired,
-  image: React.PropTypes.string.isRequired, // name of file in `../public/media`
-  selected: React.PropTypes.bool.isRequired,
-  setEventCategory: React.PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string.isRequired,
+  image: PropTypes.string.isRequired, // name of file in `../public/media`
+  selected: PropTypes.bool.isRequired,
+  setEventCategory: PropTypes.func.isRequired,
 };
 
 export default EventCategory;

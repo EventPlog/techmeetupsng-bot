@@ -15,7 +15,6 @@
 
 import React from 'react';
 import 'whatwg-fetch';
-import PropTypes from 'proptypes';
 
 /* ----------  External UI Kit  ---------- */
 
@@ -50,7 +49,7 @@ import {dateString} from '../utils/date-string-format';
 
 /* ----------  Models  ---------- */
 
-import Event from '../models/event';
+import Gift from '../models/event';
 import User from '../models/user';
 
 const {ENVIRONMENTS, RATING} = User;
@@ -72,18 +71,14 @@ export default class App extends React.PureComponent {
     day: 'numeric',
   }
 
-  static IMPACTS = [
-    'inspired',
-    'connected',
-    'discouraged',
-    'indifferent'
-  ];
-
-  static RATING = [
-    'Not true',
-    'Somewhat true',
-    'Very true',
-  ];
+  /**
+   * Keeping the display labels in the front end as a separation of concerns
+   * The actual values are being imported later via static attributes on
+   * the models
+   *
+   * We have introduced an ordering dependency, but this is also the order that
+   * we wish to display the options in the UI.
+   */
 
   static eventCategories = [
     {
@@ -128,15 +123,20 @@ export default class App extends React.PureComponent {
   /* ----------  React Configuration  ---------- */
 
   static propTypes = {
-    userId: PropTypes.string.isRequired,
+    userId: React.PropTypes.string.isRequired,
   }
 
   state = {
-    event_impact: null,
-    satisfaction_level: 1,
-    net_promoter_score: 1,
-    feedback_note: '',
-    swags_present: true,
+    emailAddress: '',
+    dateOfBirth: null,
+    eventCategory: null,
+    arrivalPeriod: null,
+    environment: null,
+    skinTypes: [],
+    eventRating: 1,
+    netPromoterScore: 1,
+    textFeedback: '',
+    persist: true,
   }
 
   /* =============================================
@@ -201,7 +201,6 @@ export default class App extends React.PureComponent {
     });
   }
 
-
   /* ----------  Formatters  ---------- */
 
   // Format state for easy printing or transmission
@@ -214,25 +213,52 @@ export default class App extends React.PureComponent {
 
   /* ----------  State Handlers  ---------- */
 
-  setEventImpact(event_impact) {
-    console.log(`Event Category: ${event_impact}`);
-    this.setState({event_impact});
+  setEventCategory(eventCategory) {
+    console.log(`Gift Category: ${eventCategory}`);
+    this.setState({eventCategory});
   }
 
-  setRating(param, selectedIndex) {
-    this.setState({[param]: RATING[selectedIndex]});
+  setArrivalPeriod(arrivalPeriod) {
+    console.log(`Arrival Period: ${arrivalPeriod}`);
+    this.setState({arrivalPeriod});
   }
 
-  setFeedbackNote(feedback_note) {
-    this.setState({feedback_note});
+  setNetPromoterScore(envIndex) {
+    const netPromoterScore = RATING[envIndex];
+    console.log(`net promoter score: ${netPromoterScore}`);
+    this.setState({netPromoterScore});
   }
 
-  setSwagsPresent(swags_present) {
-    this.setState({swags_present});
+  setRating(envIndex) {
+    const rating = RATING[envIndex];
+    console.log(`rating: ${rating}`);
+    this.setState({rating});
   }
 
-  submitFeedback = () => {
-    this.props.submitFeedback(this.state);
+  addSkinType(type) {
+    console.log(`Add skin type: ${type}`);
+    const oldSkinTypes = this.state.skinTypes;
+    const skinTypes = new Set(oldSkinTypes);
+    skinTypes.add(type);
+    this.setState({skinTypes});
+  }
+
+  removeSkinType(type) {
+    console.log(`Remove skin type: ${type}`);
+    const oldSkinTypes = this.state.skinTypes;
+    const skinTypes = new Set(oldSkinTypes);
+    skinTypes.delete(type);
+    this.setState({skinTypes});
+  }
+
+  setPersist(persist) {
+    console.log(`Persist: ${JSON.stringify(persist)}`);
+    this.setState({persist});
+  }
+
+  setDateOfBirth(dateOfBirth) {
+    console.log(`Set date of birth: ${dateOfBirth}`);
+    this.setState({dateOfBirth});
   }
 
   /* =============================================
@@ -240,8 +266,7 @@ export default class App extends React.PureComponent {
      ============================================= */
 
   componentWillMount() {
-    // this.pullData(); // Initial data fetch
-    this.setEventImpact(App.IMPACTS[0])
+    this.pullData(); // Initial data fetch
   }
 
   /*
@@ -254,15 +279,31 @@ export default class App extends React.PureComponent {
      * If waiting for data, just show the loading spinner
      * and skip the rest of this function
      */
-    if (!this.state.event_impact) {
+    if (!this.state.eventCategory) {
       return <Loading />;
     }
 
     /* ----------  Setup Sections (anything dynamic or repeated) ---------- */
 
+    const skinTypes = App.skinTypes.map((label, index) => {
+      const value = User.SKIN_TYPES[index];
+      const checked = this.state.skinTypes.has(value);
+
+      return (
+        <SkinType
+          key={value}
+          value={value}
+          label={label}
+          checked={checked}
+          addSkinType={this.addSkinType.bind(this)}
+          removeSkinType={this.removeSkinType.bind(this)}
+        />
+      );
+    });
+
     const eventCategories =
       App.eventCategories.map(({title, subtitle, image}, index) => {
-        const value = App.IMPACTS[index];
+        const value = Gift.CATEGORIES[index];
 
         return (
           <EventCategory
@@ -270,95 +311,129 @@ export default class App extends React.PureComponent {
             title={title}
             subtitle={subtitle}
             image={image}
-            selected={value === this.state.event_impact}
-            setEventCategory={() => this.setEventImpact(value)}
+            selected={value === this.state.eventCategory}
+            setEventCategory={() => this.setEventCategory(value)}
           />
         );
       });
 
-    const ratings = (param) =>
-      App.RATING.map((label, index) => {
-        return (
-          <Rating
-            key={label}
-            {...{label, index}}
-            active={label === this.state[param]}
-          />
-        );
-      });
+    const arrivalPeriods = App.arrivalPeriods.map((label, index) => {
+      const value = User.ARRIVAL_PERIODS[index];
+      return (
+        <ArrivalPeriod
+          key={label}
+          label={label}
+          value={value}
+          selected={value === this.state.arrivalPeriod}
+          setArrivalPeriod={this.setArrivalPeriod.bind(this)}
+        />
+      );
+    });
 
-    const {swags_present} = this.state;
-    const persistSwagSwitch = (
+    const environments = User.ENVIRONMENTS.map((label) => {
+      return (
+        <Rating
+          key={label}
+          label={label}
+          active={label === this.state.environment}
+        />
+      );
+    });
+
+    const ratings = User.RATING.map((label) => {
+      return (
+        <Rating
+          key={label}
+          label={label}
+          active={label === this.state.rating}
+        />
+      );
+    });
+
+    const {persist} = this.state;
+    const persistSwitch = (
       <Switch
-        defaultChecked={swags_present}
-        onClick={() => this.setSwagsPresent(!swags_present)}
+        defaultChecked={persist}
+        onClick={() => this.setPersist(!persist)}
       />
     );
 
     /* ----------  Main Structure  ---------- */
 
     return (
-      <div className='app feedback panel'>
-
+      <div className='app panel'>
         <section>
-          <CellsTitle>After attending this event, I felt mostly</CellsTitle>
-          <Form radio id='event-type'>{eventCategories}</Form>
-        </section>
-
-        <section>
-          <CellsTitle>I'm absolutely satisfied with this event (drag slider)</CellsTitle>
-          <div id='env-slider'>
-            <Slider
-              min={0}
-              max={2}
-              step={1}
-              defaultValue={this.state.satisfaction_level}
-              showValue={false}
-              onChange={ value => this.setState({ satisfaction_level: value }) }
-            />
-            {ratings('satisfaction_level')}
-          </div>
-        </section>
-
-
-        <section>
-          <CellsTitle>I would recommend this event to friends every chance I get. (drag slider)</CellsTitle>
-          <div id='env-slider'>
-            <Slider
-              min={0}
-              max={2}
-              step={1}
-              defaultValue={this.state.net_promoter_score}
-              showValue={false}
-              onChange={ value => this.setState({ net_promoter_score: value }) }
-            />
-            {ratings('net_promoter_score')}
-          </div>
-        </section>
-
-        <section>
+          <CellsTitle>Email Address</CellsTitle>
           <Form>
-            <FormCell switch>
-              <CellBody>I got swags - tshirt, sticker, etc. (Turn switch off if you didn't)</CellBody>
-              <CellFooter>{persistSwagSwitch}</CellFooter>
+            <FormCell select id='email-address'>
+              <Input
+                type="text"
+                value={this.state.emailAddress}
+                placeholder="you@yourdomain.com"
+              />
             </FormCell>
           </Form>
         </section>
 
         <section>
-          <CellsTitle>Anything else you might want to tell the organizers?</CellsTitle>
+          <CellsTitle>After attending this event, I felt</CellsTitle>
+          <Form radio id='event-type'>{eventCategories}</Form>
+        </section>
+
+        <section>
+          <CellsTitle>How much did you like this event</CellsTitle>
+          <div id='env-slider'>
+            <Slider
+              min={0}
+              max={2}
+              step={1}
+              defaultValue={this.state.eventRating}
+              showValue={false}
+              onChange={ value => this.setState({ eventRating: value }) }
+            />
+            {ratings}
+          </div>
+        </section>
+
+
+        <section>
+          <CellsTitle>How willing would you be to refer someone to this event?</CellsTitle>
+          <div id='env-slider'>
+            <Slider
+              min={0}
+              max={2}
+              step={1}
+              defaultValue={this.state.netPromoterScore}
+              showValue={false}
+              onChange={ value => this.setState({ netPromoterScore: value }) }
+            />
+            {ratings}
+          </div>
+        </section>
+
+        <section>
+          <CellsTitle>Anything else you might want to point out?</CellsTitle>
           <TextArea
-            value={this.state.feedback_note}
+            value={this.state.textFeedback}
             placeholder="Something specific you noticed ..."
             onChange={ e => {
-              this.setFeedbackNote(e.target.value)
+              console.log(e);
+              this.setState({textFeedback: e.target.value })
             }}
             maxLength={200} />
         </section>
 
 
+        <section>
+          <Form>
+            <FormCell switch>
+              <CellBody>Send my email address</CellBody>
+              <CellFooter>{persistSwitch}</CellFooter>
+            </FormCell>
+          </Form>
+        </section>
         <ButtonArea className='see-options'>
-          <Button onClick={this.submitFeedback}>Submit my feedback</Button>
+          <Button onClick={this.pushData}>Submit my feedback</Button>
         </ButtonArea>
       </div>
     );

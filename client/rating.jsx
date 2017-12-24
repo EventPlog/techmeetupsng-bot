@@ -9,12 +9,7 @@
 
 import React from 'react';
 import {CellFooter} from 'react-weui';
-
-const ratingsMap = {
-  'Not much': 'least',
-  'Average': 'average',
-  'Very much': 'most'
-}
+import PropTypes from 'proptypes';
 
 // Helper function to capitalize the first letter of some text
 const humanize = (text) => {
@@ -25,19 +20,19 @@ const humanize = (text) => {
  * Component for the rating slider labels
  * The selected item is styled to indicate that it is selected
  */
-const Rating = ({active, label}) => {
+const Rating = ({active, label, index}) => {
   const activeClass = active ? 'active' : null;
 
   return (
-    <CellFooter id={ratingsMap[label]} className={`slider-option ${activeClass}`}>
+    <CellFooter className={`slider-option ${activeClass} rating-${index}`}>
       {humanize(label)}
     </CellFooter>
   );
 };
 
 Rating.propTypes = {
-  active: React.PropTypes.bool.isRequired,
-  label: React.PropTypes.string.isRequired,
+  active: PropTypes.bool.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 export default Rating;

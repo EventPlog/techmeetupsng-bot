@@ -7,11 +7,14 @@
 
 // ===== MODULES ===============================================================
 import sendApi from './send';
-
-// ===== STORES ================================================================
-import UserStore from '../stores/user-store';
 import logger from './fba-logging';
 const util = require('util');
+import NLProcessor from '../utils/nlProcessor';
+
+// ===== STORES ================================================================
+// import UserStore from '../stores/user-store';
+import UserStore from '../store/userStore';
+
 
 // Updates a users preferred event, then notifies them of the change.
 const handleNewEventSelected = (senderId, eventId) => {
@@ -52,7 +55,7 @@ const handleReceivePostback = (event) => {
     handleNewEventSelected(senderId, data.eventId);
     break;
   case 'GET_STARTED':
-    sendApi.sendHelloEventMessage(senderId);
+    sendApi.sendTextMessage(senderId);
     break;
   default:
     console.error(`Unknown Postback called: ${type}`);
@@ -66,7 +69,7 @@ const handleReceivePostback = (event) => {
  * of message that was received. Read more at: https://developers.facebook.com/
  * docs/messenger-platform/webhook-reference/message-received
  */
-const handleReceiveMessage = (event) => {
+async function handleReceiveMessage (event) {
   const message = event.message;
   const senderId = event.sender.id;
 
@@ -75,12 +78,7 @@ const handleReceiveMessage = (event) => {
   // spamming the bot if the requests take some time to return.
   sendApi.sendReadReceipt(senderId);
 
-  if (message.text) {
-    if (message.text.toLowerCase() == 'show events' || message.text.toLowerCase() == 'events') {
-      return sendApi.sendChooseEventMessage(senderId);
-    }
-    sendApi.sendHelloEventMessage(senderId);
-  }
+  await NLProcessor.nlpCheck(senderId, message)
 };
 
 /*
