@@ -9,7 +9,7 @@ class InterestsProcessor extends BaseProcessor {
    */
   static async process(recipientId, {value: strOfInterests}) {
     let interests = strOfInterests.split(',').map(interest => interest.replace('and', '').trim().toLowerCase());
-    let user = await UserStore.update(recipientId, {interests});
+    let user = await UserStore.updateInterest(recipientId, {interests});
     await this.send(recipientId, `I've noted your preference for these interests: ${strOfInterests}.`);
 
     this.delegateToOnboarding(recipientId, user)

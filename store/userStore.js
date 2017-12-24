@@ -12,6 +12,11 @@ class UserStore {
   }
 
   static async update(userId, params) {
+    const updatedUser = await callWebAPI(`/users/${userId}/`, 'PATCH', params)
+    return updatedUser;
+  }
+
+  static async updateInterest(userId, params) {
     const updatedUser = await callWebAPI(`/users/${userId}/user_interests`, 'POST', params)
     return updatedUser;
   }
