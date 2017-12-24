@@ -3,15 +3,20 @@ import BaseProcessor from '../utils/nlEntityProcessors/baseProcessor';
 
 class OnboardingController {
   static index(recipientId, user) {
-    if(!user) return;
-    if(user.locations && user.locations.length < 1) {
-      this.requestUserLocation(recipientId)
+    try {
+      if (!user) return;
+      if (user.locations && user.locations.length < 1) {
+        this.requestUserLocation(recipientId)
+      }
+      else if (user.email && user.email.indexOf('tmntest') != -1) {
+        this.requestUserEmail(recipientId);
+      }
+      else if (user.interests && user.interests.length < 1) {
+        this.requestUserInterests(recipientId);
+      }
     }
-    else if (user.email.indexOf('tmntest') != -1) {
-      this.requestUserEmail(recipientId);
-    }
-    else if (user.interests && user.interests.length < 1) {
-      this.requestUserInterests(recipientId);
+    catch(error) {
+      console.log("[OnboardingController.index] error: %o", error);
     }
   }
 
