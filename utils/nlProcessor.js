@@ -25,6 +25,7 @@ class NLProcessor {
 
       let caseIndex;
       if (nlp_entities.length > 0) {
+        // process only entities that are within our CASES and have a confidence of > 0.8
         return CASES.some(nlp_case => {
           caseIndex = nlp_entities.indexOf(nlp_case);
           if (caseIndex == -1 || !this.entityIsSure(entities[nlp_case][0])) return;

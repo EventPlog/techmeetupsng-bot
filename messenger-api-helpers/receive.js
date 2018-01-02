@@ -10,6 +10,8 @@ import sendApi from './send';
 import logger from './fba-logging';
 const util = require('util');
 import NLProcessor from '../utils/nlProcessor';
+import EventsController from '../store/eventsStore';
+import messages from './messages';
 
 // ===== STORES ================================================================
 // import UserStore from '../stores/user-store';
@@ -81,21 +83,39 @@ async function handleReceiveMessage (event) {
   await NLProcessor.nlpCheck(senderId, message)
 };
 
+async function sendEventCarousel(userId, eventId) {
+  const event = await EventsController.show(userId, eventId);
+  const eventJSON = JSON.stringify(event);
+
+  let carouselItems = messages.eventOptionsCarousel(userId, [event]);
+  let outboundMessages = [
+    messages.barCodeWelcomeMessage,
+    carouselItems,
+  ];
+  sendApi.sendMessage(userId, outboundMessages)
+}
 /*
  * handleReceiveReferral - Message Event called when a referral event is sent to
  * your page. Read more about the 'referral' object at: https://developers.
  * facebook.com/docs/messenger-platform/reference/webhook-events/messaging_referrals/
  */
-const handleReceiveReferral = (event) => {
+const handleReceiveReferral = (event, res) => {
   const senderId = event.sender.id;
-  var payload = {};
+  let payload = {};
+  let eventId;
   if (event.referral.ref){
     payload["ref"] = event.referral.ref;
+    let [label, id] = event.referral.ref.split('-')
+    eventId = id;
   }
   if (event.referral.ad_id){
     payload["ad_id"] = event.referral.ad_id;
   }
   logger.fbLog("referral", payload, senderId);
+
+  if (eventId) {
+    sendEventCarousel(senderId, eventId)
+  }
 };
 
 

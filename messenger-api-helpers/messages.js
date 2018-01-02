@@ -92,6 +92,40 @@ const changeEventButton = {
 };
 
 /**
+ * Button for sharing events`
+ * @type {{type: string, share_contents: {attachment: {type: string, payload: {template_type: string, elements: [*]}}}}}
+ */
+const shareEventsButton = ({id: eventId, title, organizer, featured_image}, userId) => ({
+  type: "element_share",
+  share_contents: {
+    attachment: {
+      type: "template",
+      payload: {
+        template_type: "generic",
+        elements: [
+          {
+            title,
+            subtitle: "By: " + organizer.name,
+            image_url: featured_image,
+            default_action: {
+              type: "web_url",
+              url: `${SERVER_URL}/users/${userId}/events/${eventId}?ref=invited_by_${userId}`
+            },
+            buttons: [
+              {
+                type: "web_url",
+                url: `${SERVER_URL}/users/${userId}/events/${eventId}?ref=invited_by_${userId}`,
+                title: "View event"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+})
+
+/**
  * Message that informs the user of the promotion and prompts
  * them to set their preferences.
  */
@@ -143,7 +177,7 @@ const currentEventButton = (recipientId) => {
             subtitle: event.description,
             buttons: [
               viewDetailsButton(event.id),
-              changeEventButton,
+              shareEventsButton,
             ],
           },
         ],
@@ -157,6 +191,13 @@ const currentEventButton = (recipientId) => {
  */
 const eventOptionsText = {
   text: 'Pulling up a list of events you might like ...',
+};
+
+/**
+ * Message that precedes an event from a barcode
+ */
+const barCodeWelcomeMessage = {
+  text: 'Hey, retrieving the event from the barcode you scanned...',
 };
 
 /**
@@ -176,7 +217,7 @@ const eventToCarouselItem = ({id, title, organizer, featured_image}, user) => {
     image_url: featured_image,
     buttons: [
       viewDetailsButton(id, user.id),
-      chooseEventButton(id, user.id),
+      shareEventsButton({id, title, organizer, featured_image}, user.id)
     ],
   };
 };
@@ -255,7 +296,7 @@ const eventCheckedInMessage = (event) => {
  */
 const feedbackSentMessage = (event) => {
   return {
-    text: `Thank you for contributing towards improving tech events by sharing feedback. Organizers really, really appreciate."`
+    text: `Thank you for contributing towards improving tech events by sharing feedback. Organizers really, really appreciate. :)`
   };
 };
 
@@ -297,6 +338,7 @@ export default {
   eventRegisteredMessage,
   eventCheckedInMessage,
   feedbackSentMessage,
+  barCodeWelcomeMessage,
   persistentMenu,
   getStarted,
 };
