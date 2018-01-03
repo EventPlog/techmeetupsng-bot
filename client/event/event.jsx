@@ -21,6 +21,7 @@ import Feedback from '../feedback';
 class Event extends React.Component {
 
   state = {
+    userId: null,
     isAttending: false,
     checkedInAt: false,
     showLoading: false,
@@ -30,12 +31,28 @@ class Event extends React.Component {
 
   componentWillMount() {
     this.setEventState(this.props);
+    this.setUserId();
   }
 
   componentDidMount() {
     logger.fbLog('view_event_page', {event_id: this.props.id, title: this.props.title}, this.props.userId);
+
   }
 
+  setUserId = () => {
+    let app_id = process.env.APP_ID;
+    let that = this;
+    MessengerExtensions.getContext(app_id,
+      function success(res) {
+        if (res.psid) {
+          that.setState({userId: res.psid})
+        }
+      },
+      function error(res) {
+        that.setState({userId: that.props.userId})
+      }
+    )
+  }
   setEventState = (event) => {
     const {
       is_attending: isAttending,
@@ -80,7 +97,8 @@ class Event extends React.Component {
   };
 
   submitFeedback = async(feedback_response) => {
-    const { userId, id: event_id, title } = this.props;
+    const {id: event_id, title } = this.props;
+    const {userId} = this.state;
     logger.fbLog('submit_feedback_start', {event_id, title}, userId);
     this.setState({showLoading: true});
     try {
@@ -111,8 +129,8 @@ class Event extends React.Component {
     }
     const successImagePath = `/media/ui/success-check-mark.svg`;
     const {id, title, featured_image, description,
-            link, organizer, speakers, agenda, userId} = this.props;
-    const { isAttending, checkedInAt, feedbackResponse, showLoading, showToast } = this.state;
+            link, organizer, speakers, agenda} = this.props;
+    const { isAttending, checkedInAt, feedbackResponse, showLoading, showToast, userId } = this.state;
     let isCheckedIn = !!(isAttending && checkedInAt);
     let shouldShowSpeakers = !isCheckedIn || (isCheckedIn && feedbackResponse.id);
 
