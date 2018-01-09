@@ -75,3 +75,18 @@ window.attachFeedback = (userId, event) => {
     ReactDOM.render(<Oops />, document.getElementById('content'));
   }
 };
+
+// Simple initializer for attaching the Preferences App to the DOM
+window.attachPreferences = (userId) => {
+  /**
+   * getContext is only available on iOS and Android,
+   * so show an error page if userId is undefined
+   */
+  console.log('[window.attachPreferences] Attaching preferences for user ', userId)
+  if (userId) {
+    const app = <App userId={userId} />;
+    ReactDOM.render(app, document.getElementById('content'));
+  } else {
+    ReactDOM.render(<Oops />, document.getElementById('content'));
+  }
+};

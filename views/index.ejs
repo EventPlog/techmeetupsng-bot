@@ -31,6 +31,8 @@
        window.attachEvent(JSON.parse(<%- locals.userId %>), event);
      <% } else if (typeof isFeedback !== 'undefined' && isFeedback) { %>
        window.attachFeedback(userId, event);
+     <% } else if (typeof isPreferences !== 'undefined' && isPreferences) { %>
+     window.attachPreferences(JSON.parse(<%- locals.userId %>));
      <% } else { %>
        window.attachApp();
 //       window.extAsyncInit = function() {

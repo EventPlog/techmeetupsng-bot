@@ -16,10 +16,13 @@
 import React from 'react';
 import 'whatwg-fetch';
 import PropTypes from 'proptypes';
+import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import InterestsSection from './preferences/interests';
 
 /* ----------  External UI Kit  ---------- */
 
 import {
+  Badge,
   Button,
   ButtonArea,
   CellBody,
@@ -28,18 +31,21 @@ import {
   CellsTitle,
   Form,
   FormCell,
+  Grids,
   Input,
+  Label,
   Slider,
   Switch,
+  Toast
 } from 'react-weui';
 
 /* ----------  Internal Components  ---------- */
 
-import ArrivalPeriod from './arrival-period.jsx';
-import Environment from './rating.jsx';
-import GiftCategory from './event-category.jsx';
 import Loading from './loading.jsx';
-import SkinType from './skin-type.jsx';
+import logger from './fba-logging';
+import processRequest from '../messenger-api-helpers/webAPI';
+
+// import iconSrc from './media/ui/unchecked.png';
 
 /* ----------  Helpers  ---------- */
 
@@ -57,6 +63,25 @@ const {ENVIRONMENTS} = User;
    =            React Application              =
    ============================================= */
 
+const interests = {
+  'artificial intelligence': {id: 1, event_count: 2, selected: false},
+  'angular': {id: 2, event_count: 4, selected: false},
+  'content management': {id: 3, event_count: 2, selected: true},
+  'data science': {id: 4, event_count: 2, selected: true},
+  'digital marketing': {id: 5, event_count: 4, selected: false},
+  'go': {id: 6, event_count: 2, selected: false},
+  'javascript': {id: 7, event_count: 2, selected: false},
+  'python': {id: 8, event_count: 2, selected: false},
+  'php': {id: 9, event_count: 2, selected: false},
+  'product management': {id: 10, event_count: 2, selected: false},
+  'react': {id: 11, event_count: 2, selected: false},
+  'ruby': {id: 12, event_count: 2, selected: false},
+}
+
+const toTitleCase = (str) => {
+  return str[0].toUpperCase() + str.substr(1)
+}
+
 export default class App extends React.PureComponent {
 
   /* =============================================
@@ -70,69 +95,6 @@ export default class App extends React.PureComponent {
     day: 'numeric',
   }
 
-  /**
-   * Keeping the display labels in the front end as a separation of concerns
-   * The actual values are being imported later via static attributes on
-   * the models
-   *
-   * We have introduced an ordering dependency, but this is also the order that
-   * we wish to display the options in the UI.
-   */
-
-  static eventCategories = [
-    {
-      title: 'Moisturizers',
-      subtitle: 'Daily moisturizers & night creams',
-      image: 'moisturizers-filtered-cropped.jpg',
-    },
-    {
-      title: 'Cleansers',
-      subtitle: 'Face washes, wipes & exfoliators',
-      image: 'cleansers-filtered-cropped.jpg',
-    },
-    {
-      title: 'Masks',
-      subtitle: 'Face & sheet masks',
-      image: 'masks-filtered-cropped.jpg',
-    },
-    {
-      title: 'Lip Treatments',
-      subtitle: 'Balms & sunscreen',
-      image: 'lip-treatments-filtered-cropped.jpg',
-    },
-  ]
-
-  static interests = [
-    'Acne or blemishes',
-    'Oiliness',
-    'Loss of tone',
-    'Wrinkles',
-    'Sensitivity',
-    'Dehydration (tight with oil)',
-    'Dryness (flaky with no oil)',
-    'Scars',
-  ]
-
-  static interests = [
-    'artificial intelligence',
-    'angular',
-    'content management',
-    'data science',
-    'digital marketing',
-    'go',
-    'javascript',
-    'python',
-    'php',
-    'product management',
-    'react',
-    'ruby',
-  ]
-
-  static arrivalPeriods = [
-    'Last 30 days',
-    'Last 60 days',
-    'Coming soon',
-  ]
 
   /* ----------  React Configuration  ---------- */
 
@@ -141,13 +103,15 @@ export default class App extends React.PureComponent {
   }
 
   state = {
-    dateOfBirth: null,
-    eventCategory: null,
-    arrivalPeriod: null,
-    environment: null,
     interests: [],
     persist: true,
+    email: null,
+    showLoading: false,
+    showToast: false,
+    country: "Nigeria",
+    region: "Lagos",
   }
+
 
   /* =============================================
      =               Helper Methods              =
@@ -164,8 +128,8 @@ export default class App extends React.PureComponent {
    * @returns {undefined}
    */
   pullData() {
-    const endpoint = `/users/${this.props.userId}`;
-    console.log(`Pulling data from ${endpoint}...`);
+    const endpoint = `/users/${this.props.userId}/preferences`;
+    console.log(`Pulling data from ${endpoint}...`)
 
     fetch(endpoint)
       .then((response) => {
@@ -191,7 +155,6 @@ export default class App extends React.PureComponent {
     const content = this.jsonState();
     console.log(`Push data: ${content}`);
 
-    WebviewControls.close();
     fetch(`/users/${this.props.userId}`, {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
@@ -211,6 +174,69 @@ export default class App extends React.PureComponent {
     });
   }
 
+  showSuccessToast = () => {
+    this.setState({showLoading: false, showToast: true});
+
+    this.state.toastTimer = setTimeout(()=> {
+      this.setState({showToast: false});
+    }, 2000);
+  }
+
+  getInterestsIds = (interests) => {
+    let interests_ids = [];
+    for (let interest in interests) {
+      if (interests[interest].selected) {
+        interests_ids.push(interests[interest].id)
+      }
+    }
+    return interests_ids;
+  }
+
+  preparePayload = () => {
+    const {email, region, country, interests} = this.state;
+    let interests_ids = this.getInterestsIds(interests);
+    return {email, region, country, interests_ids}
+  }
+
+  getPreferences = async(userId) => {
+    logger.fbLog('preferences_success', {email: this.state.email}, userId);
+    this.setState({showLoading: true});
+    try {
+      let response = await processRequest(`/users/${userId}/preferences`, 'GET', {});
+      if (response && response.user_id) {
+        const {email, region, country, interests} = response;
+        return this.setState({
+          email,
+          region: toTitleCase(region || this.state.region),
+          country: toTitleCase(country || this.state.country),
+          interests,
+          showLoading: false
+        })
+      }
+      throw response.status
+    }
+    catch(err) {
+      console.error(`Unable to retrieve preferences for user id: ${userId}`, err);
+      this.setState({showLoading: false});
+    }
+  };
+
+  savePreferences = async(userId) => {
+    logger.fbLog('save_preferences_start', {email: this.state.email}, userId);
+    this.setState({showLoading: true});
+    try {
+      let response = await processRequest(`/users/${userId}/preferences`, 'POST', {user: this.preparePayload()});
+      if (response && response.id) {
+        this.showSuccessToast();
+        logger.fbLog('save_preferences_success', {event_id: response.id, title: response.title}, userId);
+      }
+    }
+    catch(err) {
+      console.error(`Unable to register event for user ${userId}. `, err);
+      this.setState({showLoading: false});
+    }
+  };
+
   /* ----------  Formatters  ---------- */
 
   // Format state for easy printing or transmission
@@ -221,38 +247,8 @@ export default class App extends React.PureComponent {
     });
   }
 
-  /* ----------  State Handlers  ---------- */
-
-  setGiftCategory(eventCategory) {
-    console.log(`Gift Category: ${eventCategory}`);
-    this.setState({eventCategory});
-  }
-
-  setArrivalPeriod(arrivalPeriod) {
-    console.log(`Arrival Period: ${arrivalPeriod}`);
-    this.setState({arrivalPeriod});
-  }
-
-  setEnvironment(envIndex) {
-    const environment = ENVIRONMENTS[envIndex];
-    console.log(`Environment: ${environment}`);
-    this.setState({environment});
-  }
-
-  addInterest(type) {
-    console.log(`Add interest: ${type}`);
-    const oldInterests = this.state.interests;
-    const interests = new Set(oldInterests);
-    interests.add(type);
-    this.setState({interests});
-  }
-
-  removeInterest(type) {
-    console.log(`Remove Interest type: ${type}`);
-    const oldInterests = this.state.interests;
-    const interests = new Set(oldInterests);
-    interests.delete(type);
-    this.setState({interests});
+  initState() {
+    this.setState({interests})
   }
 
   setPersist(persist) {
@@ -260,9 +256,38 @@ export default class App extends React.PureComponent {
     this.setState({persist});
   }
 
-  setDateOfBirth(dateOfBirth) {
-    console.log(`Set date of birth: ${dateOfBirth}`);
-    this.setState({dateOfBirth});
+  toggleInterest = (interest) => {
+    const {interests} = this.state;
+    this.setState({
+      interests: {...interests,
+        [interest]: {
+          ...interests[interest],
+          selected: !interests[interest].selected
+        }}
+    })
+  }
+
+  data = () => {
+    let interestData = [];
+    const {interests} = this.state;
+    for (let interest in interests) {
+      interestData.push({
+        icon: <img onClick={(e) => this.toggleInterest(interest)}
+                   src={`/media/ui/${interests[interest].selected ? 'checked' : 'unchecked'}.png`} />,
+        label: interest,
+        children: <Badge preset="header">{interests[interest].event_count} </Badge>,
+        href: 'javascript:;'
+      })
+    }
+    return interestData;
+  }
+
+  selectCountry = (val) => {
+    this.setState({ country: val });
+  }
+
+  update = (property, val) => {
+    this.setState({ [property]: val });
   }
 
   /* =============================================
@@ -270,81 +295,25 @@ export default class App extends React.PureComponent {
      ============================================= */
 
   componentWillMount() {
-    this.pullData(); // Initial data fetch
+    this.getPreferences(this.props.userId); // Initial data fetch
+    // this.initState();
   }
 
-  /*
-   * Provide the main structure of the resulting HTML
-   * Delegates items out to specialized components
-   *
-   */
   render() {
     /**
      * If waiting for data, just show the loading spinner
      * and skip the rest of this function
      */
     if (!this.state.eventCategory) {
-      return <Loading />;
+      // return <Loading />;
     }
 
     /* ----------  Setup Sections (anything dynamic or repeated) ---------- */
 
-    const interests = App.interests.map((label, index) => {
-      const value = User.INTERESTS[index];
-      const checked = this.state.interests.has(value);
 
-      return (
-        <SkinType
-          key={value}
-          value={value}
-          label={label}
-          checked={checked}
-          addSkinType={this.addInterest.bind(this)}
-          removeSkinType={this.removeInterest.bind(this)}
-        />
-      );
-    });
+    const {persist, country, region, showToast, showLoading} = this.state;
+    const {userId} = this.props;
 
-    const eventCategories =
-      App.eventCategories.map(({title, subtitle, image}, index) => {
-        const value = Gift.CATEGORIES[index];
-
-        return (
-          <GiftCategory
-            key={value}
-            title={title}
-            subtitle={subtitle}
-            image={image}
-            selected={value === this.state.eventCategory}
-            setGiftCategory={() => this.setGiftCategory(value)}
-          />
-        );
-      });
-
-    const arrivalPeriods = App.arrivalPeriods.map((label, index) => {
-      const value = User.ARRIVAL_PERIODS[index];
-      return (
-        <ArrivalPeriod
-          key={label}
-          label={label}
-          value={value}
-          selected={value === this.state.arrivalPeriod}
-          setArrivalPeriod={this.setArrivalPeriod.bind(this)}
-        />
-      );
-    });
-
-    const environments = User.ENVIRONMENTS.map((label) => {
-      return (
-        <Environment
-          key={label}
-          label={label}
-          active={label === this.state.environment}
-        />
-      );
-    });
-
-    const {persist} = this.state;
     const persistSwitch = (
       <Switch
         defaultChecked={persist}
@@ -357,34 +326,62 @@ export default class App extends React.PureComponent {
     return (
       <div className='app'>
         <section>
-          <CellsTitle>Email Address</CellsTitle>
+          <CellsTitle>My email address is</CellsTitle>
           <Form>
             <FormCell select id='email-address'>
               <Input
                 type="text"
-                value={this.state.emailAddress}
+                value={this.state.email}
                 placeholder="you@yourdomain.com"
-              />
+                onChange={(e) => this.update('email', e.target.value)} />
             </FormCell>
           </Form>
         </section>
 
         <section>
-          <CellsTitle>Which of these categories are you most interested in?</CellsTitle>
-          <Form checkbox>{interests}</Form>
+          <CellsTitle>My preferred location is</CellsTitle>
+          <Form>
+            <FormCell select id='country'>
+              <CellHeader>
+                <Label>Country</Label>
+              </CellHeader>
+              <CellBody>
+                <CountryDropdown
+                  value={country}
+                  onChange={(val) => this.update('country', val)} />
+              </CellBody>
+            </FormCell>
+
+            <FormCell select id='region'>
+              <CellHeader>
+                <Label>Region</Label>
+              </CellHeader>
+              <CellBody>
+                <RegionDropdown
+                  country={country}
+                  value={region}
+                  onChange={(val) => this.update('region', val)} />
+              </CellBody>
+            </FormCell>
+          </Form>
         </section>
+
+        <InterestsSection interests={this.data()} />
 
         <section>
           <Form>
             <FormCell switch>
-              <CellBody>Set as new default</CellBody>
+              <CellBody>Message me when an event is available</CellBody>
               <CellFooter>{persistSwitch}</CellFooter>
             </FormCell>
           </Form>
         </section>
         <ButtonArea className='see-options'>
-          <Button onClick={() => this.pushData()}>Save these settings</Button>
+          <Button onClick={() => this.savePreferences(userId)}>Save these settings</Button>
         </ButtonArea>
+
+        <Toast icon="success-no-circle" show={showToast}>Done</Toast>
+        <Toast icon="loading" show={showLoading}>Processing ...</Toast>
       </div>
     );
   }

@@ -45,7 +45,6 @@ const viewDetailsButton = (eventId, userId) => {
     title: 'View Details',
     type: 'web_url',
     url: `${SERVER_URL}/users/${userId}/events/${eventId}`,
-    // url: `${SERVER_URL}/events/${eventId}`,
     webview_height_ratio: 'tall',
     messenger_extensions: true,
   };
@@ -338,6 +337,7 @@ export default {
   eventRegisteredMessage,
   eventCheckedInMessage,
   feedbackSentMessage,
+  setPreferencesButton,
   barCodeWelcomeMessage,
   persistentMenu,
   getStarted,
