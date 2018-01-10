@@ -90,6 +90,17 @@ const viewEventsButton = {
   }),
 };
 
+/**
+ * Button for displaying a postback button that triggers the change event flow
+ */
+const attendEventButton = (eventId) => ({
+  type: 'postback',
+  title: 'Attend',
+  payload: JSON.stringify({
+    type: `ATTEND_EVENT-${eventId}`
+  }),
+});
+
 
 /**
  * Button for displaying a postback button that triggers the change event flow
@@ -259,6 +270,7 @@ const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_
   };
 };
 
+
 /**
  * Message that informs the user what event has been selected for them
  * and prompts them to select a different event.
@@ -270,7 +282,7 @@ const eventOptionsCarousel = (recipientId, events) => {
   const user = UserStore.get(recipientId) || UserStore.insert({id: recipientId});
   // const eventOptions = user.getRecommendedEvents();
 
-  const carouselItems = events.map(gift => eventToCarouselItem(gift, user));
+  const carouselItems = events.map(event => eventToCarouselItem(event, user));
 
   return {
     attachment: {
@@ -281,6 +293,57 @@ const eventOptionsCarousel = (recipientId, events) => {
       },
     },
   };
+};
+
+/**
+ * Message that informs the user what event has been selected for them
+ * and prompts them to select a different event.
+ *
+ * @param {Object} id - The Event unique id.
+ * @param {Object} title - The Event name.
+ * @param {Object} date - The Event date
+ * @param {Object} time - The Event time
+ * @param {Object} venue - The Event venue
+ * @param {Object} organizer - The Event organizer.
+ * @param {Object} featured_image - Path to the original image for the event.
+ * @returns {Object} Messenger representation of a carousel item.
+ */
+const eventToListItem = ({id, title, date, time, venue, organizer, featured_image}, user) => {
+  return messageWithButtons(
+    `${title}` +
+    `\n\nOrganized by ${organizer.name}` +
+    `\n\nDate: ${date}` +
+    `\nTime: ${time}` +
+    `\nVenue: ${venue || 'Not yet specified'}`,
+    [
+      viewDetailsButton(id, user.id),
+      attendEventButton(id),
+      shareEventsButton({id, title, organizer, featured_image}, user.id)
+    ]
+  );
+};
+/**
+ * Message that informs the user what event has been selected for them
+ * and prompts them to select a different event.
+ *
+ * @param {String} recipientId Id of the user to send the message to.
+ * @returns {Object} Message payload
+ */
+const eventsList = (recipientId, events) => {
+  const user = UserStore.get(recipientId) || UserStore.insert({id: recipientId});
+
+  const carouselItems = events.map(event => eventToListItem(event, user));
+
+  return carouselItems;
+  // return {
+  //   attachment: {
+  //     type: 'template',
+  //     payload: {
+  //       template_type: 'generic',
+  //       elements: carouselItems,
+  //     },
+  //   },
+  // };
 };
 
 /**
@@ -306,7 +369,7 @@ const eventChangedMessage = (recipientId) => {
 const eventRegisteredMessage = (event) => {
   // const purchasedItem = EventStore.get(eventId);
   return {
-    text: `Okay, I've added ${event.title} to your events :)` +
+    text: `Okay, I've added "${event.title}" to your events :)` +
           `\n\nVisit the link: ${event.link} to register with the organizers.`,
   };
 };
@@ -372,6 +435,7 @@ export default {
   eventOptionsText,
   eventOptionsCarousel,
   eventChangedMessage,
+  eventsList,
   eventRegisteredMessage,
   eventCheckedInMessage,
   feedbackSentMessage,
