@@ -1,5 +1,9 @@
 import React from 'react';
 import {
+  Cells,
+  Cell,
+  CellBody,
+  CellFooter,
   Toast,
 } from 'react-weui';
 
@@ -62,6 +66,18 @@ class Event extends React.Component {
     this.setState({isAttending, checkedInAt, feedbackResponse});
   }
 
+  cellGenerator(label, value) {
+    return (
+      <Cell>
+        <CellBody>
+          {label}:
+        </CellBody>
+        <CellFooter>
+          {value}
+        </CellFooter>
+      </Cell>
+    )
+  }
   attendEvent = async(userId, event) => {
     logger.fbLog('attend_event_start', {event_id: event.id, title: event.title}, userId);
     this.setState({showLoading: true});
@@ -129,7 +145,7 @@ class Event extends React.Component {
     }
     const successImagePath = `/media/ui/success-check-mark.svg`;
     const {id, title, featured_image, description,
-            link, organizer, speakers, agenda} = this.props;
+            link, date, time, venue, organizer, speakers, agenda} = this.props;
     const { isAttending, checkedInAt, feedbackResponse, showLoading, showToast, userId } = this.state;
     let isCheckedIn = !!(isAttending && checkedInAt);
     let shouldShowSpeakers = !isCheckedIn || (isCheckedIn && feedbackResponse.id);
@@ -161,6 +177,12 @@ class Event extends React.Component {
             {(isCheckedIn && !feedbackResponse.id) &&
             <Feedback {...{userId, event: this.props}}
                 submitFeedback={this.submitFeedback} />}
+
+            <Cells className="event-details">
+              {this.cellGenerator('Date', date)}
+              {this.cellGenerator('Time', time)}
+              {this.cellGenerator('Venue', venue || 'Not yet specified')}
+            </Cells>
 
             {shouldShowSpeakers && [
               <Speakers {...{speakers}} />,
