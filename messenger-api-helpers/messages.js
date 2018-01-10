@@ -235,16 +235,20 @@ const barCodeWelcomeMessage = {
  * Message that informs the user what event has been selected for them
  * and prompts them to select a different event.
  *
- * @param {Object} id - The Events unique id.
- * @param {Object} title - The Events name.
+ * @param {Object} id - The Event unique id.
+ * @param {Object} title - The Event name.
+ * @param {Object} date - The Event date
+ * @param {Object} time - The Event time
+ * @param {Object} venue - The Event venue
  * @param {Object} organizer - The Event organizer.
  * @param {Object} featured_image - Path to the original image for the event.
  * @returns {Object} Messenger representation of a carousel item.
  */
-const eventToCarouselItem = ({id, title, time, venue, organizer, featured_image}, user) => {
+const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_image}, user) => {
   return {
     title,
     subtitle: `By ${organizer.name}` +
+              `\nDate: ${date}` +
               `\nTime: ${time}` +
               `\nVenue: ${venue || 'Not yet specified'}`,
     image_url: featured_image,

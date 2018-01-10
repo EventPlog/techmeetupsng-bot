@@ -397,6 +397,10 @@ span.agenda-speaker-prefix {
   margin-right: 20px;
 }
 
+.event-details .weui-cell__bd {
+  text-align: left;
+}
+
 .weui-badge {
   margin: 1em;
   background-color: #a3a5a7;
@@ -404,3 +408,4 @@ span.agenda-speaker-prefix {
 .weui-grid__label {
   /*white-space: pre-wrap;*/
 }
+
