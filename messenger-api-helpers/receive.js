@@ -30,6 +30,9 @@ const handleNewEventPurchased = (senderId, eventId) => {
   sendApi.sendEventRegisteredMessage(senderId, eventId);
 };
 
+const handleEventRegistration = async (userId, [type, eventId]) =>  {
+  sendApi.registerForEvent(userId, eventId);
+}
 
 /*
  * handleReceivePostback — Postback event handler triggered by a postback
@@ -49,22 +52,26 @@ const handleReceivePostback = (event) => {
   const senderId = event.sender.id;
 
   // perform an action based on the type of payload received
-  switch (type) {
-  case 'VIEW_EVENTS':
-    sendApi.sendChooseEventMessage(senderId);
-    break;
-  case 'SET_PREFERENCES':
-    sendApi.sendSetPreferencesMessage(senderId);
-    break;
-  case 'CHOOSE_GIFT':
-    handleNewEventSelected(senderId, data.eventId);
-    break;
-  case 'GET_STARTED':
-    sendApi.sendTextMessage(senderId);
-    break;
-  default:
-    console.error(`Unknown Postback called: ${type}`);
-    break;
+  let typeArr = type.split('-');
+  switch (typeArr[0]) {
+    case 'VIEW_EVENTS':
+      sendApi.sendChooseEventMessage(senderId);
+      break;
+    case 'SET_PREFERENCES':
+      sendApi.sendSetPreferencesMessage(senderId);
+      break;
+    case 'ATTEND_EVENT':
+      handleEventRegistration(senderId, typeArr);
+      break;
+    case 'CHOOSE_GIFT':
+      handleNewEventSelected(senderId, data.eventId);
+      break;
+    case 'GET_STARTED':
+      sendApi.sendTextMessage(senderId);
+      break;
+    default:
+      console.error(`Unknown Postback called: ${type}`);
+      break;
   }
 };
 
