@@ -53,6 +53,9 @@ const handleReceivePostback = (event) => {
   case 'VIEW_EVENTS':
     sendApi.sendChooseEventMessage(senderId);
     break;
+  case 'SET_PREFERENCES':
+    sendApi.sendSetPreferencesMessage(senderId);
+    break;
   case 'CHOOSE_GIFT':
     handleNewEventSelected(senderId, data.eventId);
     break;

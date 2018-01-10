@@ -74,7 +74,7 @@ const sendReadReceipt = (recipientId) => {
 
 // Send the initial message telling the user about the promotion.
 const sendTextMessage = (recipientId, message) => {
-  logger.fbLog("send_message", {payload: "hello_events"}, recipientId);
+  logger.fbLog("send_message", {payload: "messages to user"}, recipientId);
   sendMessage(recipientId, message ? {text: message} : messages.helloEventsMessage);
 };
 
@@ -89,7 +89,16 @@ const sendPreferencesChangedMessage = (recipientId) => {
     ]);
 };
 
-const sendEventNotFoundMessage = ({user, events}) => {
+const sendSetPreferencesMessage = (recipientId) => {
+  sendMessage(
+    recipientId,
+    [
+      messages.messageWithButtons(
+        "Here you go!",
+        [messages.setPreferencesButton(recipientId)]
+      )
+    ]
+  )
 }
 
 // Send a message displaying the events a user can choose from.
@@ -97,10 +106,12 @@ const sendChooseEventMessage = async (recipientId, params={}) => {
   const {user, events} = await EventsController.index(recipientId, params);
   if(!events || events.length < 1) {
     let payload = [
-      `404! I couldn't find any matching events at this time. :(`,
-      "Events are sorted by tags",
-      "You could change your interests to match a tag that is likely to have an event",
-      messages.setPreferencesButton
+      messages.formatPayloadText(`404! I couldn't find any matching events at this time. :(`),
+      messages.formatPayloadText("I use your interests and location to match you with events"),
+      messages.messageWithButtons(
+        "You could personalize these when you change your preferences.",
+        [messages.setPreferencesButton(user.facebook_id)]
+      )
     ];
 
     return sendMessage(
@@ -147,4 +158,5 @@ export default {
   sendEventRegisteredMessage,
   sendEventCheckedInMessage,
   sendFeedbackSentMessage,
+  sendSetPreferencesMessage,
 };

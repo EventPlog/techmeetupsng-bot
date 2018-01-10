@@ -82,6 +82,9 @@ const toTitleCase = (str) => {
   return str[0].toUpperCase() + str.substr(1)
 }
 
+const showNonTestEmails = (email) =>
+  (email.indexOf('tmntest') == -1) ? email : '';
+
 export default class App extends React.PureComponent {
 
   /* =============================================
@@ -203,17 +206,19 @@ export default class App extends React.PureComponent {
     this.setState({showLoading: true});
     try {
       let response = await processRequest(`/users/${userId}/preferences`, 'GET', {});
-      if (response && response.user_id) {
-        const {email, region, country, interests} = response;
-        return this.setState({
-          email,
-          region: toTitleCase(region || this.state.region),
-          country: toTitleCase(country || this.state.country),
-          interests,
-          showLoading: false
-        })
+      if (response) {
+        if (response.user_id) {
+          const {email, region, country, interests} = response;
+          return this.setState({
+            email: showNonTestEmails(email),
+            region: toTitleCase(region || this.state.region),
+            country: toTitleCase(country || this.state.country),
+            interests,
+            showLoading: false
+          })
+        }
+        throw 'A server error occured.';
       }
-      throw response.status
     }
     catch(err) {
       console.error(`Unable to retrieve preferences for user id: ${userId}`, err);
@@ -226,9 +231,13 @@ export default class App extends React.PureComponent {
     this.setState({showLoading: true});
     try {
       let response = await processRequest(`/users/${userId}/preferences`, 'POST', {user: this.preparePayload()});
-      if (response && response.id) {
-        this.showSuccessToast();
-        logger.fbLog('save_preferences_success', {event_id: response.id, title: response.title}, userId);
+      if (response) {
+        if (response.user_id) {
+          this.showSuccessToast();
+          logger.fbLog('save_preferences_success', {event_id: response.id, title: response.title}, userId);
+          return
+        }
+        throw 'An error occured'
       }
     }
     catch(err) {
@@ -338,6 +347,8 @@ export default class App extends React.PureComponent {
           </Form>
         </section>
 
+        <InterestsSection interests={this.data()} />
+
         <section>
           <CellsTitle>My preferred location is</CellsTitle>
           <Form>
@@ -366,16 +377,14 @@ export default class App extends React.PureComponent {
           </Form>
         </section>
 
-        <InterestsSection interests={this.data()} />
-
-        <section>
-          <Form>
-            <FormCell switch>
-              <CellBody>Message me when an event is available</CellBody>
-              <CellFooter>{persistSwitch}</CellFooter>
-            </FormCell>
-          </Form>
-        </section>
+        {/*<section>*/}
+          {/*<Form>*/}
+            {/*<FormCell switch>*/}
+              {/*<CellBody>Message me when an event is available</CellBody>*/}
+              {/*<CellFooter>{persistSwitch}</CellFooter>*/}
+            {/*</FormCell>*/}
+          {/*</Form>*/}
+        {/*</section>*/}
         <ButtonArea className='see-options'>
           <Button onClick={() => this.savePreferences(userId)}>Save these settings</Button>
         </ButtonArea>
