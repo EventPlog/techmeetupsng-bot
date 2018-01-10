@@ -1,5 +1,6 @@
 import BaseProcessor from './baseProcessor';
 import UserStore from '../../store/userStore';
+import messages from '../../messenger-api-helpers/messages'
 
 class GreetingsProcessor extends BaseProcessor {
   /**
@@ -12,7 +13,15 @@ class GreetingsProcessor extends BaseProcessor {
     if(this.isGoodByeGreeting(nlpEntity.value)) {
       return this.send(recipientId, "Thanks for saying hi. Talk to you soon!");
     }
-    await this.send(recipientId, "Hello! I'm Sarah, a tech events guide. I could show you tech events around you");
+    await this.sendPayload(recipientId,
+      [
+        {text: "Hello! I'm Sarah, a bot working at techmeetupsng"},
+        messages.messageWithButtons(
+          "I could show you tech events around you",
+          [messages.viewEventsButton, messages.setPreferencesButton(recipientId)]
+        )
+      ]
+    );
     this.delegateToOnboarding(recipientId, user)
   }
 

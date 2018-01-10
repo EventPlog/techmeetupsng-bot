@@ -5,6 +5,15 @@ import sendApi from '../../messenger-api-helpers/send';
 import { addDaysToDate, daysInMonth, daysInYear } from '../../utils/date-string-format';
 
 class EventProcessor extends BaseProcessor {
+
+  /**
+   * @param recipientId
+   * @param message
+   * @return {Promise.<void>}
+   */
+  static async processCreate(recipientId) {
+    sendApi.sendNewEventForm(recipientId);
+  }
   /**
    * @param recipientId
    * @param email

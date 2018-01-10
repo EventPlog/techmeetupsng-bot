@@ -11,6 +11,7 @@ const CASES = [
   'email',
   'bye',
   'greetings',
+  'create_event',
   'event',
   'location',
   'datetime',
@@ -25,7 +26,8 @@ class NLProcessor {
 
       let caseIndex;
       if (nlp_entities.length > 0) {
-        // process only entities that are within our CASES and have a confidence of > 0.8
+        // process only entities that are within our CASES
+        // and have a confidence of > 0.8
         return CASES.some(nlp_case => {
           caseIndex = nlp_entities.indexOf(nlp_case);
           if (caseIndex == -1 || !this.entityIsSure(entities[nlp_case][0])) return;
@@ -51,6 +53,9 @@ class NLProcessor {
 
     let user, success;
     switch (entity_name) {
+      case 'create_event':
+        return EventProcessor.process(recipientId, message);
+
       case 'event':
         return EventProcessor.process(recipientId, message);
 

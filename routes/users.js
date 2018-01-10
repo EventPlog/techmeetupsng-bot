@@ -8,6 +8,7 @@
 // ===== MODULES ===============================================================
 import express from 'express';
 import events from './events';
+import preferences from './preferences';
 
 // ===== MESSENGER =============================================================
 import sendApi from '../messenger-api-helpers/send';
@@ -47,6 +48,7 @@ router.put('/:userId', ({body, params: {userId}}, res) => {
 });
 
 router.use('/:userId/events', events);
+router.use('/:userId/preferences', preferences);
 
 /**
  * Update a users selected event,

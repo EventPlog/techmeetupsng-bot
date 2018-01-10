@@ -28,6 +28,22 @@ class BaseEntityProcessor {
   static sendMultipleTexts(recipientId, textsArray){
     return sendApi.sendMessage(recipientId, textsArray.map(text => ({text})))
   }
+
+  /**
+   * @param recipientId : string
+   * @param text : Array
+   */
+  static sendTextWithButton(recipientId, text, buttons){
+    return sendApi.sendTextWithButton(recipientId, text, buttons);
+  }
+
+  /**
+   * @param recipientId : string
+   * @param text : Array
+   */
+  static sendPayload(recipientId, payload) {
+    return sendApi.sendMessage(recipientId, payload);
+  }
 }
 
 export default BaseEntityProcessor;

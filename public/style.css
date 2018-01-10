@@ -396,3 +396,11 @@ span.agenda-speaker-prefix {
   height: 50px;
   margin-right: 20px;
 }
+
+.weui-badge {
+  margin: 1em;
+  background-color: #a3a5a7;
+}
+.weui-grid__label {
+  /*white-space: pre-wrap;*/
+}

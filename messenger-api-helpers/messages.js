@@ -28,13 +28,13 @@ const SERVER_URL = process.env.SERVER_URL;
 /**
  * Button for displaying the preferences menu inside a webview
  */
-const setPreferencesButton = {
+const setPreferencesButton = (userId) => ({
   type: 'web_url',
   title: 'Set Preferences',
-  url: `${SERVER_URL}/`,
+  url: `${SERVER_URL}/users/${userId}/preferences`,
   webview_height_ratio: 'tall',
   messenger_extensions: true,
-};
+});
 
 /*
  * Button for displaying the view details button for a event
@@ -45,7 +45,6 @@ const viewDetailsButton = (eventId, userId) => {
     title: 'View Details',
     type: 'web_url',
     url: `${SERVER_URL}/users/${userId}/events/${eventId}`,
-    // url: `${SERVER_URL}/events/${eventId}`,
     webview_height_ratio: 'tall',
     messenger_extensions: true,
   };
@@ -83,11 +82,23 @@ const chooseEventButton = (eventId, userId) => {
 /**
  * Button for displaying a postback button that triggers the change event flow
  */
-const changeEventButton = {
+const viewEventsButton = {
   type: 'postback',
   title: 'Show Events',
   payload: JSON.stringify({
     type: 'VIEW_EVENTS',
+  }),
+};
+
+
+/**
+ * Button for displaying a postback button that triggers the change event flow
+ */
+const setPreferencesPostback = {
+  type: 'postback',
+  title: 'Set Preferences',
+  payload: JSON.stringify({
+    type: 'SET_PREFERENCES',
   }),
 };
 
@@ -135,10 +146,25 @@ const helloEventsMessage = {
     payload: {
       template_type: 'button',
       text: 'Thank you for letting us help you keep track of tech events.',
-      buttons: [changeEventButton, setPreferencesButton],
+      buttons: [viewEventsButton],
     },
   },
 };
+
+/**
+ * Message that informs the user of the promotion and prompts
+ * them to set their preferences.
+ */
+const messageWithButtons = (text, buttons) => ({
+  attachment: {
+    type: 'template',
+    payload: {
+      template_type: 'button',
+      text,
+      buttons,
+    },
+  },
+});
 
 /**
  * Message that informs the user that their preferences have changed.
@@ -153,6 +179,11 @@ const preferencesUpdatedMessage = {
 const currentEventText = {
   text: 'This is your current event selection. If you’d like to change it, you can do so below.',
 };
+
+/**
+ * format messages so they can be sent to fb api
+ */
+const formatPayloadText = text => ({ text });
 
 /**
  * Message that informs the user what event has been selected for them
@@ -210,10 +241,12 @@ const barCodeWelcomeMessage = {
  * @param {Object} featured_image - Path to the original image for the event.
  * @returns {Object} Messenger representation of a carousel item.
  */
-const eventToCarouselItem = ({id, title, organizer, featured_image}, user) => {
+const eventToCarouselItem = ({id, title, time, venue, organizer, featured_image}, user) => {
   return {
     title,
-    subtitle: 'By ' + organizer.name,
+    subtitle: `By ${organizer.name}` +
+              `\nTime: ${time}` +
+              `\nVenue: ${venue || 'Not yet specified'}`,
     image_url: featured_image,
     buttons: [
       viewDetailsButton(id, user.id),
@@ -307,8 +340,8 @@ const persistentMenu = {
   setting_type: 'call_to_actions',
   thread_state: 'existing_thread',
   call_to_actions: [
-    changeEventButton,
-    setPreferencesButton,
+    viewEventsButton,
+    setPreferencesPostback,
   ],
 };
 
@@ -338,6 +371,11 @@ export default {
   eventRegisteredMessage,
   eventCheckedInMessage,
   feedbackSentMessage,
+  formatPayloadText,
+  messageWithButtons,
+  viewEventsButton,
+  setPreferencesButton,
+  setPreferencesPostback,
   barCodeWelcomeMessage,
   persistentMenu,
   getStarted,
