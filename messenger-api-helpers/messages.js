@@ -265,6 +265,7 @@ const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_
     image_url: featured_image,
     buttons: [
       viewDetailsButton(id, user.id),
+      attendEventButton(id),
       shareEventsButton({id, title, organizer, featured_image}, user.id)
     ],
   };

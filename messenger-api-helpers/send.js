@@ -130,8 +130,14 @@ const sendChooseEventMessage = async (recipientId, params={}) => {
     return sendMessageNotFound(recipientId, user);
   }
 
-  // let carouselItems = messages.eventOptionsCarousel(recipientId, events);
-  let carouselItems = messages.eventsList(recipientId, events);
+  let carouselItems;
+
+  if (params.event && params.event == 'list') {
+    carouselItems = messages.eventsList(recipientId, events);
+  } else {
+    carouselItems = [messages.eventOptionsCarousel(recipientId, events)];
+  }
+
   let outboundMessages = [
     messages.eventOptionsText,
       ...carouselItems,
