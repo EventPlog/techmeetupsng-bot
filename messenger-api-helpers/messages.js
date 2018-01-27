@@ -93,6 +93,30 @@ const viewEventsButton = {
 /**
  * Button for displaying a postback button that triggers the change event flow
  */
+const createEventsButton = {
+  type: 'postback',
+  title: 'Create an Event',
+  payload: JSON.stringify({
+    type: 'CREATE_EVENT',
+  }),
+};
+
+/*
+ * Button for selecting a event
+ */
+const createEventButton = (userId) => {
+  return {
+    title: 'Create an event',
+    type: 'web_url',
+    url: `${SERVER_URL}/users/${userId}/events/new`,
+    webview_height_ratio: 'tall',
+    messenger_extensions: true,
+  };
+};
+
+/**
+ * Button for displaying a postback button that triggers the change event flow
+ */
 const attendEventButton = (eventId) => ({
   type: 'postback',
   title: 'Attend',
@@ -157,7 +181,7 @@ const helloEventsMessage = {
     payload: {
       template_type: 'button',
       text: 'Thank you for letting us help you keep track of tech events.',
-      buttons: [viewEventsButton],
+      buttons: [viewEventsButton, createEventsButton],
     },
   },
 };
@@ -433,6 +457,7 @@ export default {
   preferencesUpdatedMessage,
   currentEventText,
   currentEventButton,
+  createEventButton,
   eventOptionsText,
   eventOptionsCarousel,
   eventChangedMessage,

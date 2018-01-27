@@ -14,11 +14,12 @@ import ReactDOM from 'react-dom';
 
 /* ----------  Local Components  ---------- */
 
-import App from './app.jsx';
-import Oops from './oops.jsx';
-import Event from './event/event.jsx';
+import App from './preferences/preferences';
+import Oops from './oops';
+import Event from './event/event';
+import NewEvent from './event/new/newEvent';
 import Feedback from './feedback';
-import Terms from './terms.jsx';
+import Terms from './terms';
 
 /* ----------  Styles  ---------- */
 
@@ -54,6 +55,16 @@ window.attachEvent = (userId, event) => {
   console.log("[window.attachEvent] for user id %s Attaching event: %o", userId, event)
   const app = userId
     ? <Event {...event} userId={userId} />
+    : <Oops />;
+
+  ReactDOM.render(app, document.getElementById('content'));
+};
+
+// Simple initializer for attaching the Event Page to the DOM
+window.attachNewEvent = (userId) => {
+  console.log("[window.attachNewEvent] for user id %s", userId)
+  const app = userId
+    ? <NewEvent userId={userId} />
     : <Oops />;
 
   ReactDOM.render(app, document.getElementById('content'));

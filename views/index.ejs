@@ -29,6 +29,8 @@
        window.attachTerms()
      <% } else if (typeof isEvent !== 'undefined' && isEvent) { %>
        window.attachEvent(JSON.parse(<%- locals.userId %>), event);
+     <% } else if (typeof isNewEvent !== 'undefined' && isNewEvent) { %>
+       window.attachNewEvent(JSON.parse(<%- locals.userId %>));
      <% } else if (typeof isFeedback !== 'undefined' && isFeedback) { %>
        window.attachFeedback(userId, event);
      <% } else if (typeof isPreferences !== 'undefined' && isPreferences) { %>

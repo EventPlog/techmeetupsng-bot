@@ -68,7 +68,7 @@ router.post('/', (req, res) => {
         } else if (messagingEvent.postback) {
           receiveApi.handleReceivePostback(messagingEvent);
         } else if (messagingEvent.referral) {
-          receiveApi.handleReceiveReferral(messagingEvent, res);
+          receiveApi.handleReceiveReferral(messagingEvent);
         } else {
           // console.log(
           //   'Webhook received unknown messagingEvent: ',

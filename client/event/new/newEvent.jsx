@@ -17,7 +17,7 @@ import React from 'react';
 import 'whatwg-fetch';
 import PropTypes from 'proptypes';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import InterestsSection from './preferences/interests';
+import InterestsSection from './interests';
 
 /* ----------  External UI Kit  ---------- */
 
@@ -36,28 +36,24 @@ import {
   Label,
   Slider,
   Switch,
+  TextArea,
   Toast
 } from 'react-weui';
 
 /* ----------  Internal Components  ---------- */
 
-import Loading from './loading.jsx';
-import logger from './fba-logging';
-import processRequest from '../messenger-api-helpers/webAPI';
+import Loading from '../../loading.jsx';
+import logger from '../../fba-logging';
+import processRequest from '../../../messenger-api-helpers/webAPI';
 
 // import iconSrc from './media/ui/unchecked.png';
 
 /* ----------  Helpers  ---------- */
 
-import WebviewControls from '../messenger-api-helpers/webview-controls';
-import {dateString} from '../utils/date-string-format';
+import {dateString} from '../../../utils/date-string-format';
 
 /* ----------  Models  ---------- */
 
-import Gift from '../models/event';
-import User from '../models/user';
-
-const {ENVIRONMENTS} = User;
 
 /* =============================================
    =            React Application              =
@@ -108,9 +104,15 @@ export default class App extends React.PureComponent {
   state = {
     interests: [],
     persist: true,
-    email: null,
     showLoading: false,
     showToast: false,
+    title: null,
+    organizer: null,
+    featured_image: null,
+    link: null,
+    description: null,
+    start_time: null,
+    end_time: null,
     country: "Nigeria",
     region: "Lagos",
   }
@@ -130,53 +132,6 @@ export default class App extends React.PureComponent {
    *
    * @returns {undefined}
    */
-  pullData() {
-    const endpoint = `/users/${this.props.userId}/preferences`;
-    console.log(`Pulling data from ${endpoint}...`)
-
-    fetch(endpoint)
-      .then((response) => {
-        if (response.status === 200) {
-          return response.json();
-        }
-
-        console.error(
-          status,
-          `Unable to fetch user data for User ${this.props.userId}'`
-        );
-      }).then((jsonResponse) => {
-        console.log(`Data fetched successfully: ${jsonResponse}`);
-
-        this.setState({
-          ...jsonResponse,
-          interests: new Set(jsonResponse.interests),
-        });
-      }).catch((err) => console.error('Error pulling data', err));
-  }
-
-  pushData() {
-    const content = this.jsonState();
-    console.log(`Push data: ${content}`);
-
-    fetch(`/users/${this.props.userId}`, {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: content,
-    }).then((response) => {
-      if (response.ok) {
-        console.log('Data successfully updated on the server!');
-        return;
-      }
-
-      console.error(
-        response.status,
-        `Unable to save user data for User ${this.props.userId}'`
-      );
-    }).catch((err) => console.error('Error pushing data', err)).then(() => {
-      WebviewControls.close();
-    });
-  }
-
   showSuccessToast = () => {
     this.setState({showLoading: false, showToast: true});
 
@@ -197,8 +152,9 @@ export default class App extends React.PureComponent {
 
   preparePayload = () => {
     const {email, region, country, interests} = this.state;
-    let interests_ids = this.getInterestsIds(interests);
-    return {email, region, country, interests_ids}
+    // let interests_ids = this.getInterestsIds(interests);
+    // return {email, region, country, interests_ids}
+    return this.state;
   }
 
   getPreferences = async(userId) => {
@@ -226,11 +182,11 @@ export default class App extends React.PureComponent {
     }
   };
 
-  savePreferences = async(userId) => {
+  submitEvent = async(userId) => {
     logger.fbLog('save_preferences_start', {email: this.state.email}, userId);
     this.setState({showLoading: true});
     try {
-      let response = await processRequest(`/users/${userId}/preferences`, 'POST', {user: this.preparePayload()});
+      let response = await processRequest(`/users/${userId}/events/new`, 'POST', {event: this.preparePayload()});
       if (response) {
         if (response.user_id) {
           this.showSuccessToast();
@@ -304,7 +260,7 @@ export default class App extends React.PureComponent {
      ============================================= */
 
   componentWillMount() {
-    this.getPreferences(this.props.userId); // Initial data fetch
+    // this.getPreferences(this.props.userId); // Initial data fetch
     // this.initState();
   }
 
@@ -335,22 +291,101 @@ export default class App extends React.PureComponent {
     return (
       <div className='app'>
         <section>
-          <CellsTitle>My email address is</CellsTitle>
+          <CellsTitle>Title</CellsTitle>
+          <Form>
+            <FormCell select id='title'>
+              <Input
+                type="text"
+                value={this.state.title}
+                placeholder="As concise as possible"
+                onChange={(e) => this.update('title', e.target.value)} />
+            </FormCell>
+          </Form>
+        </section>
+
+
+        <section>
+          <CellsTitle>Organizer</CellsTitle>
+          <Form>
+            <FormCell select id='organizer'>
+              <Input
+                type="text"
+                value={this.state.organizer}
+                placeholder="Affiliate organization"
+                onChange={(e) => this.update('organizer', e.target.value)} />
+            </FormCell>
+          </Form>
+        </section>
+
+        <section>
+          <CellsTitle>Link to featured image</CellsTitle>
           <Form>
             <FormCell select id='email-address'>
               <Input
                 type="text"
-                value={this.state.email}
-                placeholder="you@yourdomain.com"
+                value={this.state.featured_image}
+                placeholder="A link to the image online"
                 onChange={(e) => this.update('email', e.target.value)} />
             </FormCell>
           </Form>
         </section>
 
-        <InterestsSection interests={this.data()} />
+        <section>
+          <CellsTitle>Registration link</CellsTitle>
+          <Form>
+            <FormCell select id='link'>
+              <Input
+                type="text"
+                value={this.state.link}
+                placeholder="http://"
+                onChange={(e) => this.update('link', e.target.value)} />
+            </FormCell>
+          </Form>
+        </section>
 
         <section>
-          <CellsTitle>My preferred location is</CellsTitle>
+          <CellsTitle>Description</CellsTitle>
+          <Form>
+            <FormCell>
+              <CellBody>
+                <TextArea placeholder="Enter your comments"
+                          rows="3"
+                          onChange={(e) => this.update('description', e.target.value)}
+                          maxLength={200}>
+                </TextArea>
+              </CellBody>
+            </FormCell>
+          </Form>
+        </section>
+
+        <section>
+          <CellsTitle>Timing</CellsTitle>
+          <Form>
+            <FormCell>
+              <CellHeader>
+                <Label>Starts at:</Label>
+              </CellHeader>
+              <CellBody>
+                <Input type="datetime-local"
+                       onChange={(e) => this.update('starts_at', e.target.value)}
+                       defaultValue="" placeholder=""/>
+              </CellBody>
+            </FormCell>
+            <FormCell>
+              <CellHeader>
+                <Label>Ends at:</Label>
+              </CellHeader>
+              <CellBody>
+                <Input type="datetime-local"
+                       onChange={(e) => this.update('ends_at', e.target.value)}
+                       defaultValue="" placeholder=""/>
+              </CellBody>
+            </FormCell>
+          </Form>
+        </section>
+
+        <section>
+          <CellsTitle>This event is located in</CellsTitle>
           <Form>
             <FormCell select id='country'>
               <CellHeader>
@@ -377,6 +412,10 @@ export default class App extends React.PureComponent {
           </Form>
         </section>
 
+        <InterestsSection
+          title="And closely relates to"
+          interests={this.data()} />
+
         {/*<section>*/}
           {/*<Form>*/}
             {/*<FormCell switch>*/}
@@ -386,7 +425,7 @@ export default class App extends React.PureComponent {
           {/*</Form>*/}
         {/*</section>*/}
         <ButtonArea className='see-options'>
-          <Button onClick={() => this.savePreferences(userId)}>Save these settings</Button>
+          <Button onClick={() => this.submitEvent(userId)}>Save these settings</Button>
         </ButtonArea>
 
         <Toast icon="success-no-circle" show={showToast}>Done</Toast>
