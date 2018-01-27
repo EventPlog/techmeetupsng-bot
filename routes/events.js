@@ -15,12 +15,23 @@ import sendApi from '../messenger-api-helpers/send';
 import EventsController from '../store/eventsStore';
 
 // ===== STORES ================================================================
-import EventStore from '../stores/event-store';
 
 const router = express.Router({mergeParams: true});
 
-async function eventsCallback({params: {userId, eventId}}, res) {
-  // const event = EventStore.get(eventId);
+async function newEvent({params: {userId}}, res) {
+
+  res.render(
+    './index',
+    {
+      demo: process.env.DEMO.toString() == 'true',
+      isNewEvent: true,
+      title: 'Create an event',
+      userId
+    }
+  );
+}
+
+async function showEvent({params: {userId, eventId}}, res) {
   const event = await EventsController.show(userId, eventId);
   const eventJSON = JSON.stringify(event);
 
@@ -98,7 +109,8 @@ const submitFeedback = async({params: {userId, eventId}, body: {feedback_respons
 }
 
 // Get Event page
-router.get('/:eventId', eventsCallback);
+router.get('/new', newEvent);
+router.get('/:eventId', showEvent);
 router.put('/:eventId', attendEvent);
 router.post('/:eventId/check_in', checkIn);
 router.post('/:eventId/feedback_response', submitFeedback);

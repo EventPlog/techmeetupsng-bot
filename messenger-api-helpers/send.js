@@ -146,6 +146,11 @@ const sendChooseEventMessage = async (recipientId, params={}) => {
   sendMessage( recipientId, outboundMessages)
 };
 
+// send create event message
+const sendCreateEventMessage = (recipientId) => {
+  sendMessage(recipientId, messages.createEventMessage);
+};
+
 const registerForEvent = async(userId, eventId) => {
   logger.fbLog('attend_event_start', {event_id: eventId}, userId);
   let response = await callWebAPI(`/users/${userId}/user_events`, 'POST', {
@@ -188,6 +193,7 @@ export default {
   sendTextMessage,
   sendPreferencesChangedMessage,
   sendChooseEventMessage,
+  sendCreateEventMessage,
   sendEventChangedMessage,
   sendEventRegisteredMessage,
   sendEventCheckedInMessage,

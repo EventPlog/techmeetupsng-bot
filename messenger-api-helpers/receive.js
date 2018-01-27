@@ -57,8 +57,14 @@ const handleReceivePostback = (event) => {
     case 'VIEW_EVENTS':
       sendApi.sendChooseEventMessage(senderId);
       break;
+    case 'CREATE_EVENT':
+      sendApi.sendCreateEventMessage(senderId);
+      break;
     case 'SET_PREFERENCES':
       sendApi.sendSetPreferencesMessage(senderId);
+      break;
+    case 'VIEW_EVENT':
+      handleReceiveReferral(event);
       break;
     case 'ATTEND_EVENT':
       handleEventRegistration(senderId, typeArr);
@@ -109,7 +115,7 @@ async function sendEventCarousel(userId, eventId) {
  * your page. Read more about the 'referral' object at: https://developers.
  * facebook.com/docs/messenger-platform/reference/webhook-events/messaging_referrals/
  */
-const handleReceiveReferral = (event, res) => {
+const handleReceiveReferral = (event) => {
   const senderId = event.sender.id;
   let payload = {};
   let eventId;

@@ -18,7 +18,7 @@ class GreetingsProcessor extends BaseProcessor {
         {text: "Hello! I'm Sarah, a bot working at techmeetupsng"},
         messages.messageWithButtons(
           "I could show you tech events around you",
-          [messages.viewEventsButton, messages.setPreferencesButton(recipientId)]
+          [messages.viewEventsButton, messages.createEventButton(recipientId), messages.setPreferencesButton(recipientId)]
         )
       ]
     );
