@@ -4,7 +4,7 @@ class SlackService {
   static send(event) {
     console.log('event in slack formatter: ', event)
     let slackUrl = process.env.SLACK_WEBHOOK_URL;
-    callWebApi.processRequest('', 'POST', this.format(event), slackUrl)
+    callWebApi('', 'POST', this.format(event), slackUrl)
   }
 
   static format({id, title, description}) {

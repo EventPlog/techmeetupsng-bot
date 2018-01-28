@@ -112,7 +112,7 @@ const submitFeedback = async({params: {userId, eventId}, body: {feedback_respons
 async function submitEventForReview ({params: {userId}, body: {event_submission}}, res) {
   console.log("[eventsroute.submitEventForReview] params: userId: %s, event: %o", userId, {event_submission});
 
-  let response = await callWebAPI(`/users/${userId}/event_submissions`, 'POST');
+  let response = await callWebAPI(`/users/${userId}/event_submissions`, 'POST', {event_submission});
   try {
     if (response && response.id) {
       res.status(200).send(response);

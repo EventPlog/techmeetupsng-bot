@@ -44,10 +44,9 @@ export const getUrl = (url) => {
  *@param {Boolean} homeURL
 * @return {Object} fetch: to be used in views that check for success or failure
 */
-export function processRequest(path, method='GET', data = {}, homeURL=false) {
+export const processRequest = (path, method='GET', data = {}, homeURL=false) => {
   console.log("[webAPI.processRequest] calling %s with %s method and data: %s",
                 path, method, data);
-  // let hostAPI = !homeURL && process.env.TMN_API ? process.env.TMN_API : '';
   let hostAPI = getUrl(homeURL);
   let url = hostAPI + requestPath(path, method, data);
   return fetch(url, {

@@ -205,7 +205,6 @@ export default class App extends React.PureComponent {
   }
 
   disableSubmit = () => {
-    return false;
     const {title, link, description, venue, start_time, end_time, interests} = this.state;
     return !(title && link && description && venue && start_time && end_time && interests);
   }
