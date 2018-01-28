@@ -6,6 +6,7 @@
  */
 import events from '../data/events';
 import callWebAPI from '../messenger-api-helpers/webAPI';
+import SlackService from '../utils/slackService';
 
 // ===== MODULES ===============================================================
 import express from 'express';
@@ -108,11 +109,31 @@ const submitFeedback = async({params: {userId, eventId}, body: {feedback_respons
   }
 }
 
+async function submitEventForReview ({params: {userId}, body: {event_submission}}, res) {
+  console.log("[eventsroute.submitEventForReview] params: userId: %s, event: %o", userId, {event_submission});
+
+  let response = await callWebAPI(`/users/${userId}/event_submissions`, 'POST');
+  try {
+    if (response && response.id) {
+      res.status(200).send(response);
+      sendApi.sendEventSubmittedMessage(userId, response)
+      SlackService.send(response)
+    }
+  }
+  catch(err) {
+    console.error(
+      response.status,
+      `Unable to submit event for User ${userId}'. Error: ${err}`
+    );
+  }
+}
+
 // Get Event page
 router.get('/new', newEvent);
 router.get('/:eventId', showEvent);
 router.put('/:eventId', attendEvent);
 router.post('/:eventId/check_in', checkIn);
 router.post('/:eventId/feedback_response', submitFeedback);
+router.post('/submit_for_review', submitEventForReview);
 
 export default router;

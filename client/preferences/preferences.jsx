@@ -290,7 +290,8 @@ export default class App extends React.PureComponent {
         <section>
           <CellsTitle>My email address is</CellsTitle>
           <Form>
-            <FormCell select id='email-address'>
+            <FormCell id='email-address'>
+
               <Input
                 type="text"
                 value={this.state.email}

@@ -40,7 +40,6 @@ class Event extends React.Component {
 
   componentDidMount() {
     logger.fbLog('view_event_page', {event_id: this.props.id, title: this.props.title}, this.props.userId);
-
   }
 
   setUserId = () => {
@@ -57,6 +56,7 @@ class Event extends React.Component {
       }
     )
   }
+
   setEventState = (event) => {
     const {
       is_attending: isAttending,

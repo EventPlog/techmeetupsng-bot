@@ -408,4 +408,7 @@ span.agenda-speaker-prefix {
 .weui-grid__label {
   /*white-space: pre-wrap;*/
 }
+.weui-msg__desc {
+  white-space: pre-line;
+}
 

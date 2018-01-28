@@ -32,6 +32,11 @@ function requestHeaders() {
   });
 }
 
+export const getUrl = (url) => {
+  if(!url) return process.env.TMN_API;
+  return (url === true) ? '' : url;
+}
+
 /**
 * @param {String} path: eg '/questions'
 * @param {String} method: eg 'POST'
@@ -39,10 +44,11 @@ function requestHeaders() {
  *@param {Boolean} homeURL
 * @return {Object} fetch: to be used in views that check for success or failure
 */
-function processRequest(path, method='GET', data = {}, homeURL=false) {
+export function processRequest(path, method='GET', data = {}, homeURL=false) {
   console.log("[webAPI.processRequest] calling %s with %s method and data: %s",
                 path, method, data);
-  let hostAPI = !homeURL && process.env.TMN_API ? process.env.TMN_API : '';
+  // let hostAPI = !homeURL && process.env.TMN_API ? process.env.TMN_API : '';
+  let hostAPI = getUrl(homeURL);
   let url = hostAPI + requestPath(path, method, data);
   return fetch(url, {
     method  : method,
@@ -58,4 +64,4 @@ function processRequest(path, method='GET', data = {}, homeURL=false) {
   });
 }
 
-module.exports = processRequest;
+export default processRequest;
