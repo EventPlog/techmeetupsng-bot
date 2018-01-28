@@ -30,7 +30,7 @@ const SERVER_URL = process.env.SERVER_URL;
  */
 const setPreferencesButton = (userId) => ({
   type: 'web_url',
-  title: 'Set Preferences',
+  title: "Set Preferences ☀️",
   url: `${SERVER_URL}/users/${userId}/preferences`,
   webview_height_ratio: 'tall',
   messenger_extensions: true,
@@ -84,7 +84,7 @@ const chooseEventButton = (eventId, userId) => {
  */
 const viewEventsButton = {
   type: 'postback',
-  title: 'Show Events',
+  title: 'Show me events 💚',
   payload: JSON.stringify({
     type: 'VIEW_EVENTS',
   }),
@@ -95,7 +95,7 @@ const viewEventsButton = {
  */
 const createEventsButton = {
   type: 'postback',
-  title: 'Create an Event',
+  title: "Create an event",
   payload: JSON.stringify({
     type: 'CREATE_EVENT',
   }),
@@ -106,7 +106,7 @@ const createEventsButton = {
  */
 const createEventButton = (userId) => {
   return {
-    title: 'Create an event',
+    title: "Create an event 😎",
     type: 'web_url',
     url: `${SERVER_URL}/users/${userId}/events/new`,
     webview_height_ratio: 'tall',
@@ -131,7 +131,7 @@ const attendEventButton = (eventId) => ({
  */
 const setPreferencesPostback = {
   type: 'postback',
-  title: 'Set Preferences',
+  title: "Set Preferences ☀️",
   payload: JSON.stringify({
     type: 'SET_PREFERENCES',
   }),
@@ -426,6 +426,18 @@ const feedbackSentMessage = (event) => {
 };
 
 /**
+ * Message hailing organizers for creating events
+ *
+ * @param {String} eventSubmitted
+ * @returns {Object} Message payload
+ */
+const eventSubmittedMessage = (eventSubmitted) => {
+  return {
+    text: `Great job you're doing in the tech ecosystem! 🔥 \n\nI'll let you know when we share your event or anything else that arise.`
+  };
+};
+
+/**
  * The persistent menu for users to use.
  */
 const persistentMenu = {
@@ -465,6 +477,7 @@ export default {
   eventRegisteredMessage,
   eventCheckedInMessage,
   feedbackSentMessage,
+  eventSubmittedMessage,
   formatPayloadText,
   messageWithButtons,
   viewEventsButton,

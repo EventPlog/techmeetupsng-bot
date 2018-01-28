@@ -44,6 +44,7 @@ import {
 
 import Loading from '../../loading.jsx';
 import logger from '../../fba-logging';
+import SuccessMessage from '../../common/successMsg';
 import processRequest from '../../../messenger-api-helpers/webAPI';
 
 // import iconSrc from './media/ui/unchecked.png';
@@ -59,27 +60,9 @@ import {dateString} from '../../../utils/date-string-format';
    =            React Application              =
    ============================================= */
 
-const interests = {
-  'artificial intelligence': {id: 1, event_count: 2, selected: false},
-  'angular': {id: 2, event_count: 4, selected: false},
-  'content management': {id: 3, event_count: 2, selected: true},
-  'data science': {id: 4, event_count: 2, selected: true},
-  'digital marketing': {id: 5, event_count: 4, selected: false},
-  'go': {id: 6, event_count: 2, selected: false},
-  'javascript': {id: 7, event_count: 2, selected: false},
-  'python': {id: 8, event_count: 2, selected: false},
-  'php': {id: 9, event_count: 2, selected: false},
-  'product management': {id: 10, event_count: 2, selected: false},
-  'react': {id: 11, event_count: 2, selected: false},
-  'ruby': {id: 12, event_count: 2, selected: false},
-}
-
 const toTitleCase = (str) => {
   return str[0].toUpperCase() + str.substr(1)
 }
-
-const showNonTestEmails = (email) =>
-  (email.indexOf('tmntest') == -1) ? email : '';
 
 export default class App extends React.PureComponent {
 
@@ -102,8 +85,8 @@ export default class App extends React.PureComponent {
   }
 
   state = {
-    interests: [],
-    persist: true,
+    id: null,
+    interests: null,
     showLoading: false,
     showToast: false,
     title: null,
@@ -111,6 +94,7 @@ export default class App extends React.PureComponent {
     featured_image: null,
     link: null,
     description: null,
+    venue: null,
     start_time: null,
     end_time: null,
     country: "Nigeria",
@@ -138,16 +122,6 @@ export default class App extends React.PureComponent {
     this.state.toastTimer = setTimeout(()=> {
       this.setState({showToast: false});
     }, 2000);
-  }
-
-  getInterestsIds = (interests) => {
-    let interests_ids = [];
-    for (let interest in interests) {
-      if (interests[interest].selected) {
-        interests_ids.push(interests[interest].id)
-      }
-    }
-    return interests_ids;
   }
 
   preparePayload = () => {
@@ -186,10 +160,11 @@ export default class App extends React.PureComponent {
     logger.fbLog('save_preferences_start', {email: this.state.email}, userId);
     this.setState({showLoading: true});
     try {
-      let response = await processRequest(`/users/${userId}/events/new`, 'POST', {event: this.preparePayload()});
+      let response = await processRequest(`/users/${userId}/events/submit_for_review`, 'POST', {event_submission: this.state}, true);
       if (response) {
-        if (response.user_id) {
+        if (response.id) {
           this.showSuccessToast();
+          this.setState({id: response.id});
           logger.fbLog('save_preferences_success', {event_id: response.id, title: response.title}, userId);
           return
         }
@@ -204,55 +179,20 @@ export default class App extends React.PureComponent {
 
   /* ----------  Formatters  ---------- */
 
-  // Format state for easy printing or transmission
-  jsonState() {
-    return JSON.stringify({
-      ...this.state,
-      interests: [...this.state.interests],
-    });
-  }
-
   initState() {
     this.setState({interests})
   }
 
-  setPersist(persist) {
-    console.log(`Persist: ${JSON.stringify(persist)}`);
-    this.setState({persist});
-  }
-
-  toggleInterest = (interest) => {
-    const {interests} = this.state;
-    this.setState({
-      interests: {...interests,
-        [interest]: {
-          ...interests[interest],
-          selected: !interests[interest].selected
-        }}
-    })
-  }
-
-  data = () => {
-    let interestData = [];
-    const {interests} = this.state;
-    for (let interest in interests) {
-      interestData.push({
-        icon: <img onClick={(e) => this.toggleInterest(interest)}
-                   src={`/media/ui/${interests[interest].selected ? 'checked' : 'unchecked'}.png`} />,
-        label: interest,
-        children: <Badge preset="header">{interests[interest].event_count} </Badge>,
-        href: 'javascript:;'
-      })
-    }
-    return interestData;
-  }
-
-  selectCountry = (val) => {
-    this.setState({ country: val });
-  }
-
   update = (property, val) => {
     this.setState({ [property]: val });
+  }
+
+  showSuccessMessage = () => {
+    let title = "Thanks for submitting 🙂";
+    let description = "Your event is under review. Just a period where we help format so it looks good when your target audience preview it. " +
+            "\n\nWe'll let you know once it has been posted or if we have any other questions." +
+            "\n\nYou can close this window by clicking the 'X' button by the right of the title bar.";
+    return <SuccessMessage {...{title, description}} />
   }
 
   /* =============================================
@@ -264,13 +204,19 @@ export default class App extends React.PureComponent {
     // this.initState();
   }
 
+  disableSubmit = () => {
+    return false;
+    const {title, link, description, venue, start_time, end_time, interests} = this.state;
+    return !(title && link && description && venue && start_time && end_time && interests);
+  }
+
   render() {
     /**
      * If waiting for data, just show the loading spinner
      * and skip the rest of this function
      */
-    if (!this.state.eventCategory) {
-      // return <Loading />;
+    if (this.state.id) {
+      return this.showSuccessMessage();
     }
 
     /* ----------  Setup Sections (anything dynamic or repeated) ---------- */
@@ -293,26 +239,30 @@ export default class App extends React.PureComponent {
         <section>
           <CellsTitle>Title</CellsTitle>
           <Form>
-            <FormCell select id='title'>
-              <Input
-                type="text"
-                value={this.state.title}
-                placeholder="As concise as possible"
-                onChange={(e) => this.update('title', e.target.value)} />
+            <FormCell id='title'>
+              <CellBody>
+                <Input
+                  type="text"
+                  value={this.state.title}
+                  placeholder="As concise as possible"
+                  onChange={(e) => this.update('title', e.target.value)} />
+              </CellBody>
             </FormCell>
           </Form>
         </section>
 
 
         <section>
-          <CellsTitle>Organizer</CellsTitle>
+          <CellsTitle>Affiliate organization (only one is allowed)</CellsTitle>
           <Form>
-            <FormCell select id='organizer'>
-              <Input
-                type="text"
-                value={this.state.organizer}
-                placeholder="Affiliate organization"
-                onChange={(e) => this.update('organizer', e.target.value)} />
+            <FormCell id='organizer'>
+              <CellBody>
+                <Input
+                  type="text"
+                  value={this.state.organizer}
+                  placeholder="Developer Circles Lagos, Google Developer Group?"
+                  onChange={(e) => this.update('organizer', e.target.value)} />
+              </CellBody>
             </FormCell>
           </Form>
         </section>
@@ -320,25 +270,31 @@ export default class App extends React.PureComponent {
         <section>
           <CellsTitle>Link to featured image</CellsTitle>
           <Form>
-            <FormCell select id='email-address'>
-              <Input
-                type="text"
-                value={this.state.featured_image}
-                placeholder="A link to the image online"
-                onChange={(e) => this.update('email', e.target.value)} />
+            <FormCell id='featured_image'>
+              <CellBody>
+                <Input
+                  type="text"
+                  value={this.state.featured_image}
+                  defaultValue="http://"
+                  placeholder="A link to the image online"
+                  onChange={(e) => this.update('featured_image', e.target.value)} />
+              </CellBody>
             </FormCell>
           </Form>
         </section>
 
         <section>
-          <CellsTitle>Registration link</CellsTitle>
+          <CellsTitle>Link to RSVP</CellsTitle>
           <Form>
-            <FormCell select id='link'>
-              <Input
-                type="text"
-                value={this.state.link}
-                placeholder="http://"
-                onChange={(e) => this.update('link', e.target.value)} />
+            <FormCell id='link'>
+              <CellBody>
+                <Input
+                  type="text"
+                  value={this.state.link}
+                  defaultValue="http://"
+                  placeholder="http://"
+                  onChange={(e) => this.update('link', e.target.value)} />
+              </CellBody>
             </FormCell>
           </Form>
         </section>
@@ -348,11 +304,26 @@ export default class App extends React.PureComponent {
           <Form>
             <FormCell>
               <CellBody>
-                <TextArea placeholder="Enter your comments"
+                <TextArea placeholder="Please stick to one paragraph long."
                           rows="3"
                           onChange={(e) => this.update('description', e.target.value)}
                           maxLength={200}>
                 </TextArea>
+              </CellBody>
+            </FormCell>
+          </Form>
+        </section>
+
+        <section>
+          <CellsTitle>Venue</CellsTitle>
+          <Form>
+            <FormCell id='venue'>
+              <CellBody>
+                <Input
+                  type="text"
+                  value={this.state.venue}
+                  placeholder="Add a landmark if possible"
+                  onChange={(e) => this.update('venue', e.target.value)} />
               </CellBody>
             </FormCell>
           </Form>
@@ -367,7 +338,11 @@ export default class App extends React.PureComponent {
               </CellHeader>
               <CellBody>
                 <Input type="datetime-local"
-                       onChange={(e) => this.update('starts_at', e.target.value)}
+                       value={this.state.start_time}
+                       onChange={(e) => {
+                         this.update('start_time', e.target.value)
+                         this.update('end_time', e.target.value)
+                       }}
                        defaultValue="" placeholder=""/>
               </CellBody>
             </FormCell>
@@ -377,7 +352,9 @@ export default class App extends React.PureComponent {
               </CellHeader>
               <CellBody>
                 <Input type="datetime-local"
-                       onChange={(e) => this.update('ends_at', e.target.value)}
+                       id="end_time"
+                       value={this.state.end_time}
+                       onChange={(e) => this.update('end_time', e.target.value)}
                        defaultValue="" placeholder=""/>
               </CellBody>
             </FormCell>
@@ -412,20 +389,40 @@ export default class App extends React.PureComponent {
           </Form>
         </section>
 
-        <InterestsSection
-          title="And closely relates to"
-          interests={this.data()} />
+        <section>
+          <CellsTitle>Your target audience are people interested in ...</CellsTitle>
+          <Form>
+            <FormCell id='interests'>
+              <CellBody>
+                <Input placeholder="Ruby, Backend, Software Architecture"
+                       value={this.state.interests}
+                       onChange={(e) => this.update('interests', e.target.value)} />
+              </CellBody>
+            </FormCell>
+          </Form>
+        </section>
 
-        {/*<section>*/}
-          {/*<Form>*/}
-            {/*<FormCell switch>*/}
-              {/*<CellBody>Message me when an event is available</CellBody>*/}
-              {/*<CellFooter>{persistSwitch}</CellFooter>*/}
-            {/*</FormCell>*/}
-          {/*</Form>*/}
-        {/*</section>*/}
+        <section>
+          <CellsTitle>Any special favors you'll like to ask?</CellsTitle>
+          <Form>
+            <FormCell id='comments'>
+              <CellBody>
+                <TextArea placeholder="How else could we help make your event awesome?"
+                          rows="3"
+                          value={this.state.comments}
+                          onChange={(e) => this.update('comments', e.target.value)}
+                          maxLength={200}>
+                 </TextArea>
+              </CellBody>
+            </FormCell>
+          </Form>
+        </section>
+
         <ButtonArea className='see-options'>
-          <Button onClick={() => this.submitEvent(userId)}>Save these settings</Button>
+          <Button onClick={() => this.submitEvent(userId)}
+                  disabled={this.disableSubmit()} >
+            Submit for review
+          </Button>
         </ButtonArea>
 
         <Toast icon="success-no-circle" show={showToast}>Done</Toast>

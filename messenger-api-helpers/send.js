@@ -187,6 +187,9 @@ const sendEventCheckedInMessage = (recipientId, event) =>
 const sendFeedbackSentMessage = (recipientId, event) =>
   sendMessage(recipientId, messages.feedbackSentMessage(event));
 
+const sendEventSubmittedMessage = (recipientId, eventToSubmit) =>
+  sendMessage(recipientId, messages.eventSubmittedMessage(eventToSubmit));
+
 export default {
   sendMessage,
   sendReadReceipt,
@@ -198,6 +201,7 @@ export default {
   sendEventRegisteredMessage,
   sendEventCheckedInMessage,
   sendFeedbackSentMessage,
+  sendEventSubmittedMessage,
   sendSetPreferencesMessage,
   registerForEvent,
 };
