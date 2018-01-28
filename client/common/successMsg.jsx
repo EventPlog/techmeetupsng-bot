@@ -14,7 +14,7 @@ const SuccessFooter = ()=>(
       <FooterLink href="#">Tech Meetups Ng</FooterLink>
     </FooterLinks>
     <FooterText>
-      Copyright © 2008-2016 m.me/techmeetupsng
+      Copyright © 2018 m.me/techmeetupsng
     </FooterText>
   </Footer>
 );
