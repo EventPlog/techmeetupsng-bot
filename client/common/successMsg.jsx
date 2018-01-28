@@ -26,11 +26,14 @@ const SuccessMsg = ({title, description, onClose}) => {
         type="success"
         title={title}
         description={description}
-        buttons={onClose ? [{
-          type: 'default',
-          label: 'Close',
-          onClick: onClose
-        }]: undefined}
+        buttons={onClose ?
+                  [{
+                    type: 'default',
+                    label: 'Close',
+                    onClick: onClose
+                  }] :
+                  undefied
+        }
         footer={SuccessFooter}
       />
     </Page>

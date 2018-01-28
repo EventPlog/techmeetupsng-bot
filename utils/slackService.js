@@ -1,6 +1,6 @@
 import callWebApi from '../messenger-api-helpers/webAPI';
 
-class SlackMsgFormatter {
+class SlackService {
   static send(event) {
     console.log('event in slack formatter: ', event)
     let slackUrl = process.env.SLACK_WEBHOOK_URL;
@@ -27,4 +27,4 @@ class SlackMsgFormatter {
   }
 }
 
-export default SlackMsgFormatter;
+export default SlackService;
