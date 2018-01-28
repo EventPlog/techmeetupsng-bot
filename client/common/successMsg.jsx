@@ -32,7 +32,7 @@ const SuccessMsg = ({title, description, onClose}) => {
                     label: 'Close',
                     onClick: onClose
                   }] :
-                  undefied
+                  undefined
         }
         footer={SuccessFooter}
       />
