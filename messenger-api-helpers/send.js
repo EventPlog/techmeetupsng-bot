@@ -95,13 +95,25 @@ const sendSetPreferencesMessage = (recipientId) => {
     recipientId,
     [
       messages.messageWithButtons(
-        "Here you go!",
+        "Click the link below",
         [messages.setPreferencesButton(recipientId)]
       )
     ]
   )
 }
 
+
+const sendCreateEventMessage = (recipientId) => {
+  sendMessage(
+    recipientId,
+    [
+      messages.messageWithButtons(
+        "Click the link below",
+        [messages.createEventButton(recipientId)]
+      )
+    ]
+  )
+}
 /**
  * Sends a not found message if there are no events
  * @param recipeientId
@@ -124,7 +136,7 @@ const sendMessageNotFound = (recipeientId, user) => {
 }
 
 // Send a message displaying the events a user can choose from.
-const sendChooseEventMessage = async (recipientId, params={}) => {
+const sendAvailableFutureEvents = async (recipientId, params={}) => {
   const {user, events} = await EventsController.index(recipientId, params);
   if(!events || events.length < 1) {
     return sendMessageNotFound(recipientId, user);
@@ -146,9 +158,28 @@ const sendChooseEventMessage = async (recipientId, params={}) => {
   sendMessage( recipientId, outboundMessages)
 };
 
-// send create event message
-const sendCreateEventMessage = (recipientId) => {
-  sendMessage(recipientId, messages.createEventMessage);
+
+// Send a message displaying the events a user can choose from.
+const sendUserRegisteredEvents = async (recipientId, params={}) => {
+  const {user, events} = await EventsController.userEvents(recipientId);
+  if(!events || events.length < 1) {
+    return sendMessageNotFound(recipientId, user);
+  }
+
+  let carouselItems;
+
+  if (params.event && params.event == 'list') {
+    carouselItems = messages.eventsList(recipientId, events);
+  } else {
+    carouselItems = [messages.eventOptionsCarousel(recipientId, events)];
+  }
+
+  let outboundMessages = [
+    messages.userEventsText,
+    ...carouselItems,
+  ];
+
+  sendMessage( recipientId, outboundMessages)
 };
 
 const registerForEvent = async(userId, eventId) => {
@@ -170,18 +201,43 @@ const registerForEvent = async(userId, eventId) => {
   }
 }
 
+
+const checkIntoEvent = async(userId, eventId) => {
+  logger.fbLog('check_into_event_start', {event_id: eventId}, userId);
+  let response = await callWebAPI(`/users/${userId}/events/${eventId}/check_in`, 'POST', {});
+  try {
+    if (response && response.id) {
+      logger.fbLog('check_into_event_success', {event_id: eventId}, userId);
+      sendEventCheckedInMessage(userId, response)
+    }
+  }
+  catch(err) {
+    console.error(
+      response.status,
+      `Unable to register event for User ${userId}'. Error: ${err}`
+    );
+  }
+}
+
 // Send a message that a users preffered event has changed.
 const sendEventChangedMessage = (recipientId) =>
   sendMessage(recipientId, messages.eventChangedMessage(recipientId));
 
 // Send a message that a user has purchased a event.
 const sendEventRegisteredMessage = (recipientId, event) =>
-
   sendMessage(recipientId, messages.eventRegisteredMessage(event));
 
 // Send a message that a user has checked into an event.
 const sendEventCheckedInMessage = (recipientId, event) =>
-  sendMessage(recipientId, messages.eventCheckedInMessage(event));
+  sendMessage(
+    recipientId,
+    [
+      messages.messageWithButtons(
+        messages.eventCheckedInMessage(event),
+        [messages.viewDetailsButton(event.id, recipientId, "Give feedback 🌱")]
+      )
+    ]
+  );
 
 // Send a message that a user has given feedback to an event.
 const sendFeedbackSentMessage = (recipientId, event) =>
@@ -195,7 +251,8 @@ export default {
   sendReadReceipt,
   sendTextMessage,
   sendPreferencesChangedMessage,
-  sendChooseEventMessage,
+  sendAvailableFutureEvents,
+  sendUserRegisteredEvents,
   sendCreateEventMessage,
   sendEventChangedMessage,
   sendEventRegisteredMessage,
@@ -204,4 +261,5 @@ export default {
   sendEventSubmittedMessage,
   sendSetPreferencesMessage,
   registerForEvent,
+  checkIntoEvent,
 };

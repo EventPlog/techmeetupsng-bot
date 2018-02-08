@@ -35,7 +35,7 @@ const fbLog = (eventName, payload, psid) => {
     });
 
     fetch("https://graph.facebook.com/v2.6/" + APP_ID + "/activities", {
-        method: 'post',
+        method: 'POST',
         headers: {
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json'

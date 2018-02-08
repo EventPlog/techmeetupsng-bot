@@ -18,8 +18,18 @@ class EventStore {
   }
 
   static async update(params) {
-    const updated_event = await callWebAPI('/events', 'PATCH', {location: params})
-    return updated_event;
+    const updatedEvent = await callWebAPI('/events', 'PATCH', {location: params})
+    return updatedEvent;
+  }
+
+  static async userEvents(recipientId, params={}) {
+    try {
+      const events = await(callWebAPI(`/users/${recipientId}/user_events`, 'GET'));
+      return events;
+    }
+    catch (e) {
+      return [];
+    }
   }
 }
 

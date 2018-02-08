@@ -32,8 +32,8 @@ class EventProcessor extends BaseProcessor {
         return;
       }
       params[entity] = nlp_entity.value;
-    })
-    let events = await sendApi.sendChooseEventMessage(recipientId, params);
+    });
+    let events = await sendApi.sendAvailableFutureEvents(recipientId, params);
     if (events && events.user) this.delegateToOnboarding(recipientId, events.user)
   }
 

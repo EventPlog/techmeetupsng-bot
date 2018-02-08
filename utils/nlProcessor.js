@@ -85,7 +85,7 @@ class NLProcessor {
   static async defaultMessage(recipientId, message) {
     if (message.text) {
       if (message.text.toLowerCase() == 'show events' || message.text.toLowerCase() == 'events') {
-        return await sendApi.sendChooseEventMessage(recipientId);
+        return await sendApi.sendAvailableFutureEvents(recipientId);
       }
       // sendApi.sendTextMessage(recipientId);
     }
