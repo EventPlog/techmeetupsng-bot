@@ -34,6 +34,10 @@ const handleEventRegistration = async (userId, [type, eventId]) =>  {
   sendApi.registerForEvent(userId, eventId);
 }
 
+const handleEventCheckIn = async (userId, [type, eventId]) =>  {
+  sendApi.checkIntoEvent(userId, eventId);
+}
+
 /*
  * handleReceivePostback — Postback event handler triggered by a postback
  * action you, the developer, specify on a button in a template. Read more at:
@@ -55,7 +59,13 @@ const handleReceivePostback = (event) => {
   let typeArr = type.split('-');
   switch (typeArr[0]) {
     case 'VIEW_EVENTS':
-      sendApi.sendChooseEventMessage(senderId);
+      sendApi.sendAvailableFutureEvents(senderId);
+      break;
+    case 'VIEW_EVENT':
+      handleReceiveReferral(event);
+      break;
+    case 'VIEW_USER_EVENTS':
+      sendApi.sendUserRegisteredEvents(senderId);
       break;
     case 'CREATE_EVENT':
       sendApi.sendCreateEventMessage(senderId);
@@ -63,11 +73,11 @@ const handleReceivePostback = (event) => {
     case 'SET_PREFERENCES':
       sendApi.sendSetPreferencesMessage(senderId);
       break;
-    case 'VIEW_EVENT':
-      handleReceiveReferral(event);
-      break;
     case 'ATTEND_EVENT':
       handleEventRegistration(senderId, typeArr);
+      break;
+    case 'CHECK_IN_EVENT':
+      handleEventCheckIn(senderId, typeArr);
       break;
     case 'CHOOSE_GIFT':
       handleNewEventSelected(senderId, data.eventId);
@@ -141,4 +151,6 @@ export default {
   handleReceiveReferral,
   handleNewEventSelected,
   handleNewEventPurchased,
+  handleEventRegistration,
+  handleEventCheckIn,
 };

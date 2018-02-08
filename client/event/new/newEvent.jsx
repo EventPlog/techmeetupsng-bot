@@ -132,12 +132,12 @@ export default class App extends React.PureComponent {
   }
 
   getPreferences = async(userId) => {
-    logger.fbLog('preferences_success', {email: this.state.email}, userId);
     this.setState({showLoading: true});
     try {
       let response = await processRequest(`/users/${userId}/preferences`, 'GET', {});
       if (response) {
         if (response.user_id) {
+          logger.fbLog('show_preferences_success', {email: this.state.email}, userId);
           const {email, region, country, interests} = response;
           return this.setState({
             email: showNonTestEmails(email),

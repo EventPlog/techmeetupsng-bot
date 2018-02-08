@@ -39,10 +39,10 @@ const setPreferencesButton = (userId) => ({
 /*
  * Button for displaying the view details button for a event
  */
-const viewDetailsButton = (eventId, userId) => {
+const viewDetailsButton = (eventId, userId, title='View Details') => {
   console.log('[view detailsButton] for event id', eventId)
   return {
-    title: 'View Details',
+    title,
     type: 'web_url',
     url: `${SERVER_URL}/users/${userId}/events/${eventId}`,
     webview_height_ratio: 'tall',
@@ -93,9 +93,20 @@ const viewEventsButton = {
 /**
  * Button for displaying a postback button that triggers the change event flow
  */
-const createEventsButton = {
+const viewMyEventsButton = {
   type: 'postback',
-  title: "Create an event",
+  title: "Events I'm registered for 🌺",
+  payload: JSON.stringify({
+    type: 'VIEW_USER_EVENTS',
+  }),
+};
+
+/**
+ * Button for displaying a postback button that triggers the change event flow
+ */
+const createEventsPostback = {
+  type: 'postback',
+  title: "Create an event 🔥",
   payload: JSON.stringify({
     type: 'CREATE_EVENT',
   }),
@@ -106,7 +117,7 @@ const createEventsButton = {
  */
 const createEventButton = (userId) => {
   return {
-    title: "Create an event 😎",
+    title: "Create an event ✌🏼",
     type: 'web_url',
     url: `${SERVER_URL}/users/${userId}/events/new`,
     webview_height_ratio: 'tall',
@@ -125,6 +136,17 @@ const attendEventButton = (eventId) => ({
   }),
 });
 
+
+/**
+ * Button for displaying a postback button that triggers the change event flow
+ */
+const checkInEventButton = (eventId) => ({
+  type: 'postback',
+  title: 'Check In',
+  payload: JSON.stringify({
+    type: `CHECK_IN_EVENT-${eventId}`
+  }),
+});
 
 /**
  * Button for displaying a postback button that triggers the change event flow
@@ -181,7 +203,7 @@ const helloEventsMessage = {
     payload: {
       template_type: 'button',
       text: 'Thank you for letting us help you keep track of tech events.',
-      buttons: [viewEventsButton, createEventsButton],
+      buttons: [viewEventsButton, createEventsPostback],
     },
   },
 };
@@ -259,6 +281,14 @@ const eventOptionsText = {
   text: 'Pulling up a list of events you might like ...',
 };
 
+
+/**
+ * Message that precedes us displaying recommended events.
+ */
+const userEventsText = {
+  text: "Here are events you committed to attending that aren't past yet:",
+};
+
 /**
  * Message that precedes an event from a barcode
  */
@@ -270,16 +300,21 @@ const barCodeWelcomeMessage = {
  * Message that informs the user what event has been selected for them
  * and prompts them to select a different event.
  *
- * @param {Object} id - The Event unique id.
- * @param {Object} title - The Event name.
- * @param {Object} date - The Event date
- * @param {Object} time - The Event time
- * @param {Object} venue - The Event venue
+ * @param {int} id - The Event unique id.
+ * @param {string} title - The Event name.
+ * @param {string} date - The Event date
+ * @param {string} time - The Event time
+ * @param {string} venue - The Event venue
+ * @param {boolean} is_attending - User attending or not?
+ * @param {string} checked_in_at - Date and time of check in
  * @param {Object} organizer - The Event organizer.
  * @param {Object} featured_image - Path to the original image for the event.
  * @returns {Object} Messenger representation of a carousel item.
  */
-const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_image}, user) => {
+const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_image, is_attending, checked_in_at}, user) => {
+  let attendButton = !is_attending ? attendEventButton(id) :
+                      (checked_in_at ? viewDetailsButton(id, user.id, 'Give feedback') :
+                                        checkInEventButton(id) )
   return {
     title,
     subtitle: `By ${organizer.name}` +
@@ -289,7 +324,7 @@ const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_
     image_url: featured_image,
     buttons: [
       viewDetailsButton(id, user.id),
-      attendEventButton(id),
+      attendButton,
       shareEventsButton({id, title, organizer, featured_image}, user.id)
     ],
   };
@@ -402,15 +437,13 @@ const eventRegisteredMessage = (event) => {
 /**
  * Message thanking users for checking in
  *
- * @param {String} event Id of the purchased item.
+ * @param {object} event : the checked-in event
  * @returns {Object} Message payload
  */
 const eventCheckedInMessage = (event) => {
   // const purchasedItem = EventStore.get(eventId);
-  return {
-    text: `You've successfully checked into the event: "${event.title}"` +
+  return `You've successfully checked into the event: "${event.title}"` +
     `\n\nRemember to give feedback! :)`
-  };
 };
 
 /**
@@ -441,27 +474,32 @@ const eventSubmittedMessage = (eventSubmitted) => {
  * The persistent menu for users to use.
  */
 const persistentMenu = {
-  setting_type: 'call_to_actions',
-  thread_state: 'existing_thread',
-  call_to_actions: [
-    viewEventsButton,
-    setPreferencesPostback,
-  ],
+  persistent_menu: [{
+    locale: "default",
+    call_to_actions: [
+      viewEventsButton,
+      createEventsPostback,
+      {
+        title: "Preferences and more 👉🏽",
+        type: "nested",
+        call_to_actions: [
+          viewMyEventsButton,
+          setPreferencesPostback
+        ]
+      }
+    ],
+  }]
 };
 
 /**
  * The Get Started button.
  */
 const getStarted = {
-  setting_type: 'call_to_actions',
-  thread_state: 'new_thread',
-  call_to_actions: [
-    {
-      payload: JSON.stringify({
-        type: 'GET_STARTED',
-      }),
-    },
-  ],
+  get_started: {
+    payload: JSON.stringify({
+      type: 'GET_STARTED',
+    }),
+  }
 };
 
 export default {
@@ -471,6 +509,7 @@ export default {
   currentEventButton,
   createEventButton,
   eventOptionsText,
+  userEventsText,
   eventOptionsCarousel,
   eventChangedMessage,
   eventsList,
@@ -481,6 +520,7 @@ export default {
   formatPayloadText,
   messageWithButtons,
   viewEventsButton,
+  viewDetailsButton,
   setPreferencesButton,
   setPreferencesPostback,
   barCodeWelcomeMessage,
