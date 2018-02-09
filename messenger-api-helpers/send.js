@@ -119,7 +119,7 @@ const sendCreateEventMessage = (recipientId) => {
  * @param recipeientId
  * @param user
  */
-const sendMessageNotFound = (recipeientId, user) => {
+const sendMessageNotFound = (recipientId, user) => {
   let payload = [
     messages.formatPayloadText(`404! I couldn't find any matching events at this time. :(`),
     messages.formatPayloadText("I use your interests and location to match you with events"),
@@ -137,25 +137,31 @@ const sendMessageNotFound = (recipeientId, user) => {
 
 // Send a message displaying the events a user can choose from.
 const sendAvailableFutureEvents = async (recipientId, params={}) => {
-  const {user, events} = await EventsController.index(recipientId, params);
-  if(!events || events.length < 1) {
-    return sendMessageNotFound(recipientId, user);
-  }
+  try {
+    const {user, events} = await EventsController.index(recipientId, params);
+    if(!events || events.length < 1) {
+      return sendMessageNotFound(recipientId, user);
+    }
 
-  let carouselItems;
+    let carouselItems;
 
-  if (params.event && params.event == 'list') {
-    carouselItems = messages.eventsList(recipientId, events);
-  } else {
-    carouselItems = [messages.eventOptionsCarousel(recipientId, events)];
-  }
+    if (params.event && params.event == 'list') {
+      carouselItems = messages.eventsList(recipientId, events);
+    } else {
+      carouselItems = [messages.eventOptionsCarousel(recipientId, events)];
+    }
 
-  let outboundMessages = [
-    messages.eventOptionsText,
+    let outboundMessages = [
+      messages.eventOptionsText,
+      sendInvitationToCreateEventMessage(recipientId),
       ...carouselItems,
-  ];
+    ];
 
-  sendMessage( recipientId, outboundMessages)
+    sendMessage( recipientId, outboundMessages)
+  }
+  catch(err) {
+    console.log('[Send.sendAvailableFutureEvents] and error occured: ', err)
+  }
 };
 
 
@@ -225,7 +231,18 @@ const sendEventChangedMessage = (recipientId) =>
 
 // Send a message that a user has purchased a event.
 const sendEventRegisteredMessage = (recipientId, event) =>
-  sendMessage(recipientId, messages.eventRegisteredMessage(event));
+  sendMessage(
+    recipientId,
+    [
+      messages.messageWithButtons(
+        messages.eventRegisteredMessage(event),
+        [
+          messages.checkInEventButton(event.id),
+          messages.viewMyEventsButton
+        ]
+      )
+    ]
+  );
 
 // Send a message that a user has checked into an event.
 const sendEventCheckedInMessage = (recipientId, event) =>
@@ -238,6 +255,18 @@ const sendEventCheckedInMessage = (recipientId, event) =>
       )
     ]
   );
+
+// Send an inviitation to create an event
+const sendInvitationToCreateEventMessage = (recipientId) =>
+  messages.messageWithButtons(
+    messages.invitationToCreateEventMessage,
+    [messages.createEventButton(recipientId)],
+  );
+  // sendMessage(
+  //   recipientId,
+  //   [
+  //   ]
+  // );
 
 // Send a message that a user has given feedback to an event.
 const sendFeedbackSentMessage = (recipientId, event) =>

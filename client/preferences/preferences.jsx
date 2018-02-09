@@ -78,8 +78,12 @@ const interests = {
   'ruby': {id: 12, event_count: 2, selected: false},
 }
 
+const toTitleString = (str, delim=' ') =>
+    str.split(delim).map(s => s[0].toUpperCase() + s.substr(1)).join(delim);
+
 const toTitleCase = (str) => {
-  return str[0].toUpperCase() + str.substr(1)
+  str = toTitleString(str);
+  return toTitleString(str, '-')
 }
 
 const showNonTestEmails = (email) =>
