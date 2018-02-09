@@ -428,10 +428,9 @@ const eventChangedMessage = (recipientId) => {
  */
 const eventRegisteredMessage = (event) => {
   // const purchasedItem = EventStore.get(eventId);
-  return {
-    text: `Okay, I've added "${event.title}" to your events :)` +
-          `\n\nVisit the link: ${event.link} to register with the organizers.`,
-  };
+  return `Okay, I've added "${event.title}" to your events :)` +
+          `\n\nVisit the link: ${event.link} to reserve a seat.` +
+          `\n\nIf you're already at the venue, check in to let the organizers know you came`;
 };
 
 /**
@@ -445,6 +444,14 @@ const eventCheckedInMessage = (event) => {
   return `You've successfully checked into the event: "${event.title}"` +
     `\n\nRemember to give feedback! :)`
 };
+
+
+/**
+ * Message inviting a user to create an event
+ */
+const invitationToCreateEventMessage =
+   `Power tip as you wait...` +
+   `\n\nHosting an event? We'll help you publicize and collect feedback`;
 
 /**
  * Message thanking users for checking in
@@ -520,10 +527,13 @@ export default {
   formatPayloadText,
   messageWithButtons,
   viewEventsButton,
+  viewMyEventsButton,
   viewDetailsButton,
+  checkInEventButton,
   setPreferencesButton,
   setPreferencesPostback,
   barCodeWelcomeMessage,
   persistentMenu,
   getStarted,
+  invitationToCreateEventMessage,
 };
