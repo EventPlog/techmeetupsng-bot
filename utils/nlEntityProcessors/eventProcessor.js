@@ -20,21 +20,28 @@ class EventProcessor extends BaseProcessor {
    * @return {Promise.<void>}
    */
   static async process(recipientId, message) {
-    const {nlp: {entities}} = message;
-    const nlp_entities = Object.keys(entities);
-    let params = {};
-    let nlp_entity;
-    nlp_entities.forEach(entity => {
-      nlp_entity = entities[entity][0];
-      if (entity == 'event' || nlp_entity.confidence < 0.8) return;
-      if (entity == 'datetime') {
-        params[entity] = this.getDateTimeRange(nlp_entity)
-        return;
-      }
-      params[entity] = nlp_entity.value;
-    });
-    let events = await sendApi.sendAvailableFutureEvents(recipientId, params);
-    if (events && events.user) this.delegateToOnboarding(recipientId, events.user)
+    try {
+      const {nlp: {entities}} = message;
+      const nlp_entities = Object.keys(entities);
+      let params = {};
+      let nlp_entity;
+      nlp_entities.some(entity => {
+        nlp_entity = entities[entity][0];
+        if (entity == 'event' || nlp_entity.confidence < 0.8) return;
+        if (entity == 'datetime') {
+          params[entity] = this.getDateTimeRange(nlp_entity)
+        }
+        if (entity == 'create_event') {
+          sendApi.sendCreateEventMessage(recipientId);
+          throw('safe break from loop');
+        }
+        params[entity] = nlp_entity.value;
+      });
+      let events = await sendApi.sendAvailableFutureEvents(recipientId, params);
+      if (events && events.user) this.delegateToOnboarding(recipientId, events.user)
+    } catch(e) {
+      console.log('An error occured: ', e)
+    }
   }
 
   static getDateTimeRange(nlp_entity) {
