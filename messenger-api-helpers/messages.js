@@ -442,7 +442,7 @@ const eventRegisteredMessage = (event) => {
 const eventCheckedInMessage = (event) => {
   // const purchasedItem = EventStore.get(eventId);
   return `You've successfully checked into the event: "${event.title}"` +
-    `\n\nRemember to give feedback! :)`
+    `\n\nAt the end of this event, please give feedback to the organizers to help them improve by clicking below :)`
 };
 
 

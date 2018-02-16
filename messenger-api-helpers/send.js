@@ -112,7 +112,7 @@ const sendCreateEventMessage = (recipientId) => {
         [messages.createEventButton(recipientId)]
       )
     ]
-  )
+  );
 }
 /**
  * Sends a not found message if there are no events
@@ -245,8 +245,8 @@ const sendEventRegisteredMessage = (recipientId, event) =>
   );
 
 // Send a message that a user has checked into an event.
-const sendEventCheckedInMessage = (recipientId, event) =>
-  sendMessage(
+const sendEventCheckedInMessage = async(recipientId, event) => {
+  await sendMessage(
     recipientId,
     [
       messages.messageWithButtons(
@@ -255,6 +255,9 @@ const sendEventCheckedInMessage = (recipientId, event) =>
       )
     ]
   );
+  setTimeout((r_id, user) =>
+    OnboardingController.index(r_id, user), 10000, recipientId, event.user);
+}
 
 // Send an inviitation to create an event
 const sendInvitationToCreateEventMessage = (recipientId) =>
@@ -262,11 +265,6 @@ const sendInvitationToCreateEventMessage = (recipientId) =>
     messages.invitationToCreateEventMessage,
     [messages.createEventButton(recipientId)],
   );
-  // sendMessage(
-  //   recipientId,
-  //   [
-  //   ]
-  // );
 
 // Send a message that a user has given feedback to an event.
 const sendFeedbackSentMessage = (recipientId, event) =>

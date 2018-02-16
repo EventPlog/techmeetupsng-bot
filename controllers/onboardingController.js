@@ -3,6 +3,7 @@ import BaseProcessor from '../utils/nlEntityProcessors/baseProcessor';
 
 class OnboardingController {
   static index(recipientId, user) {
+    console.log("[Onboarding controller.index] recipient_id: %s, user: %o", recipientId, user)
     try {
       if (!user) return;
       if (user.locations && user.locations.length < 1) {
@@ -26,7 +27,7 @@ class OnboardingController {
   }
 
   static requestUserEmail(recipientId) {
-    let message = "I'll need to remember your preferences. What email address should I save them with?";
+    let message = "I'll need to remember your preferences. What is your email?";
     sendApi.sendTextMessage(recipientId, message)
   }
 
