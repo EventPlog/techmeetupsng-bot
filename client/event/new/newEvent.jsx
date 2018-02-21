@@ -206,7 +206,7 @@ export default class App extends React.PureComponent {
 
   disableSubmit = () => {
     const {title, link, description, venue, start_time, end_time, interests} = this.state;
-    return !(title && link && description && venue && start_time && end_time && interests);
+    return !title;
   }
 
   render() {
@@ -418,7 +418,8 @@ export default class App extends React.PureComponent {
         </section>
 
         <ButtonArea className='see-options'>
-          <Button onClick={() => this.submitEvent(userId)}>
+          <Button onClick={() => this.submitEvent(userId)}
+                  disabled={this.disableSubmit()} >
             Submit for review
           </Button>
         </ButtonArea>
