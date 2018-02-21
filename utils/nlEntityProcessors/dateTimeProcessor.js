@@ -9,6 +9,7 @@ class DateTimeProcessor extends BaseProcessor {
    * @return {Promise.<*>}
    */
   static async process(recipientId, nlpEntity) {
+    return;
     if (nlpEntity.grain == 'day') {
       return this.send(recipientId, `Aha, this is the event date you want: ${(new Date(nlpEntity.value)).toDateString()}. We will handle accordingly`);
     }
