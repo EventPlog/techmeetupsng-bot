@@ -133,8 +133,8 @@ export default class App extends React.PureComponent {
 
   state = {
     event_impact: null,
-    satisfaction_level: 1,
-    net_promoter_score: 1,
+    satisfaction_level: 2,
+    net_promoter_score: 2,
     feedback_note: '',
     swags_present: true,
     resolve: '',
@@ -150,7 +150,7 @@ export default class App extends React.PureComponent {
    * Pull saved data from the server, and populate the form
    * If there's an error, we log it to the console. Errors will not be availble
    * within the Messenger webview. If you need to see them 'live', switch to
-   * an `alert()`.
+   * an `alert()`. Anything no in the webview would be subtracted.
    *
    * @returns {undefined}
    */
@@ -364,7 +364,7 @@ export default class App extends React.PureComponent {
         <section>
           <CellsTitle>What do you resolve to do differently as a result of this event?</CellsTitle>
           <TextArea
-            value={this.state.feedback_note}
+            value={this.state.resolve}
             placeholder="Something specific you noticed ..."
             onChange={ e => {
               this.setResolve(e.target.value)

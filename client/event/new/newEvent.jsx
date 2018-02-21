@@ -418,8 +418,7 @@ export default class App extends React.PureComponent {
         </section>
 
         <ButtonArea className='see-options'>
-          <Button onClick={() => this.submitEvent(userId)}
-                  disabled={this.disableSubmit()} >
+          <Button onClick={() => this.submitEvent(userId)}>
             Submit for review
           </Button>
         </ButtonArea>
