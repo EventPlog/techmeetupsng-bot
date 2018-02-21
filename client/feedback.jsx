@@ -80,9 +80,9 @@ export default class App extends React.PureComponent {
   ];
 
   static RATING = [
-    'Not true',
-    'Somewhat true',
-    'Very true',
+    'Not at all',
+    'Averagely true',
+    'Definitely'
   ];
 
   static eventCategories = [
@@ -133,10 +133,11 @@ export default class App extends React.PureComponent {
 
   state = {
     event_impact: null,
-    satisfaction_level: 1,
-    net_promoter_score: 1,
+    satisfaction_level: 2,
+    net_promoter_score: 2,
     feedback_note: '',
     swags_present: true,
+    resolve: '',
   }
 
   /* =============================================
@@ -149,7 +150,7 @@ export default class App extends React.PureComponent {
    * Pull saved data from the server, and populate the form
    * If there's an error, we log it to the console. Errors will not be availble
    * within the Messenger webview. If you need to see them 'live', switch to
-   * an `alert()`.
+   * an `alert()`. Anything no in the webview would be subtracted.
    *
    * @returns {undefined}
    */
@@ -225,6 +226,10 @@ export default class App extends React.PureComponent {
 
   setFeedbackNote(feedback_note) {
     this.setState({feedback_note});
+  }
+
+  setResolve(resolve) {
+    this.setState({resolve});
   }
 
   setSwagsPresent(swags_present) {
@@ -309,8 +314,8 @@ export default class App extends React.PureComponent {
           <CellsTitle>I'm absolutely satisfied with this event (drag slider)</CellsTitle>
           <div id='env-slider'>
             <Slider
-              min={0}
-              max={2}
+              min={1}
+              max={5}
               step={1}
               defaultValue={this.state.satisfaction_level}
               showValue={false}
@@ -322,11 +327,11 @@ export default class App extends React.PureComponent {
 
 
         <section>
-          <CellsTitle>I would recommend this event to friends every chance I get. (drag slider)</CellsTitle>
+          <CellsTitle>I would recommend this event to my friends. (drag slider)</CellsTitle>
           <div id='env-slider'>
             <Slider
-              min={0}
-              max={2}
+              min={1}
+              max={5}
               step={1}
               defaultValue={this.state.net_promoter_score}
               showValue={false}
@@ -346,7 +351,7 @@ export default class App extends React.PureComponent {
         </section>
 
         <section>
-          <CellsTitle>Anything else you might want to tell the organizers?</CellsTitle>
+          <CellsTitle>What, in your opinion, could the organizers have done better?</CellsTitle>
           <TextArea
             value={this.state.feedback_note}
             placeholder="Something specific you noticed ..."
@@ -356,6 +361,16 @@ export default class App extends React.PureComponent {
             maxLength={200} />
         </section>
 
+        <section>
+          <CellsTitle>What do you resolve to do differently as a result of this event?</CellsTitle>
+          <TextArea
+            value={this.state.resolve}
+            placeholder="Something specific you noticed ..."
+            onChange={ e => {
+              this.setResolve(e.target.value)
+            }}
+            maxLength={200} />
+        </section>
 
         <ButtonArea className='see-options'>
           <Button onClick={this.submitFeedback}>Submit my feedback</Button>
