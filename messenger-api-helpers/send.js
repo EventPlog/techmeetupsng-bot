@@ -139,7 +139,7 @@ const sendMessageNotFound = (recipientId, user) => {
 const sendAvailableFutureEvents = async (recipientId, params={}) => {
   try {
     const {user, events} = await EventsController.index(recipientId, params);
-    if(!events || events.length < 1) {
+    if(events && events.length < 1) {
       return sendMessageNotFound(recipientId, user);
     }
 
