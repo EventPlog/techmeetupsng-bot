@@ -14,11 +14,11 @@ class HelpProcessor extends BaseProcessor {
       [
         {text: "I was wondering when you'll ask. 😀"},
         {text: "I'm Sarah. I help you discover tech events you might be interested in."},
-        {text: "If you are an organizer, I help smoothen the check-in process by letting guests scan a barcode to get in. More efficient than papers ✌🏼."},
+        {text: "If you are an organizer, I help smoothen the check-in process by letting guests scan a messenger code to get in. More efficient than papers ✌🏼."},
         {text: "I also help you send feedback for events you attend or collect feedback for events you organize."},
-        {text: "Type 'menu' at any point to pull up the main menu."},
-        {text: "Type 'events' at any point to show future tech events."},
-        {text: "Type 'create event' at anytime to have me send you a link to submit an event you're organizing so we help publicize."},
+        {text: "Send 'menu' to pull up the main menu."},
+        {text: "Send 'events' so I can show you future tech events."},
+        {text: "Send 'create event' at any point to have me send you a link to submit an event you're organizing so we help publicize."},
         messages.messageWithButtons(
           "Now how can I help you?",
           [messages.viewEventsButton, messages.createEventButton(recipientId), messages.setPreferencesButton(recipientId)]
