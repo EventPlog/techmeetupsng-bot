@@ -9,7 +9,7 @@ class HelpProcessor extends BaseProcessor {
    * @return {Promise.<*>}
    */
   static async process(recipientId, nlpEntity) {
-    let user = await UserStore.show(recipientId);
+    // let user = await UserStore.show(recipientId);
     await this.sendPayload(recipientId,
       [
         {text: "I was wondering when you'll ask 😀"},
