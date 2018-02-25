@@ -2,6 +2,8 @@ import sendApi from '../messenger-api-helpers/send';
 import LocationProcessor from './nlEntityProcessors/locationProcessor';
 import EventProcessor from './nlEntityProcessors/eventProcessor';
 import EmailProcessor from './nlEntityProcessors/emailProcessor';
+import HelpProcessor from './nlEntityProcessors/helpProcessor';
+import MenuProcessor from './nlEntityProcessors/menuProcessor';
 import GreetingsProcessor from './nlEntityProcessors/greetingsProcessor';
 import GoodbyeProcessor from './nlEntityProcessors/goodbyeProcessor';
 import DateTimeProcessor from './nlEntityProcessors/dateTimeProcessor';
@@ -13,6 +15,8 @@ const CASES = [
   'greetings',
   'create_event',
   'event',
+  'show_help',
+  'show_menu',
   'location',
   'datetime',
   'interests'
@@ -58,6 +62,12 @@ class NLProcessor {
 
       case 'event':
         return EventProcessor.process(recipientId, message);
+
+      case 'show_help':
+        return HelpProcessor.process(recipientId, nlpEntity);
+
+      case 'show_menu':
+        return MenuProcessor.process(recipientId, nlpEntity);
 
       case 'email':
         return EmailProcessor.process(recipientId, nlpEntity);
