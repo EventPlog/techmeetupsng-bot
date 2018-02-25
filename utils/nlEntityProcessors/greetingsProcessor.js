@@ -15,7 +15,7 @@ class GreetingsProcessor extends BaseProcessor {
     }
     await this.sendPayload(recipientId,
       [
-        {text: "Hey! I'm Sarah, a bot working at techmeetupsng as a virtual tech event assistant. 😇"},
+        {text: "Hey! I'm Sarah, a virtual tech events assistant. Type 'help' for a detailed guide. 😇"},
         messages.messageWithButtons(
           "How can I help you?",
           [messages.viewEventsButton, messages.createEventButton(recipientId), messages.setPreferencesButton(recipientId)]
