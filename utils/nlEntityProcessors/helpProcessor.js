@@ -16,7 +16,9 @@ class HelpProcessor extends BaseProcessor {
         {text: "I'm Sarah. I help you discover tech events you might be interested in."},
         {text: "If you are an organizer, I help smoothen the check-in process by letting guests scan a barcode to get in. More efficient than papers ✌🏼."},
         {text: "I also help you send feedback on events you attend or collect feedback on events you organize."},
-        {text: "Type 'menu' at anytime to pull up the main menu"},
+        {text: "Type 'menu' at any point to pull up the main menu"},
+        {text: "Type 'events' at any point to show future tech events"},
+        {text: "Type 'create event' at anytime to have me send you a link to submit an event so we help publicize."},
         messages.messageWithButtons(
           "Now how can I help you?",
           [messages.viewEventsButton, messages.createEventButton(recipientId), messages.setPreferencesButton(recipientId)]
