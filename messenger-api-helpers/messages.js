@@ -16,7 +16,7 @@
  */
 
 // ===== STORES ================================================================
-import UserStore from '../stores/user-store';
+import UserStore from '../store/userStore';
 import EventStore from '../stores/event-store';
 import eventsData from '../data/events';
 
@@ -442,7 +442,7 @@ const eventRegisteredMessage = (event) => {
 const eventCheckedInMessage = (event) => {
   // const purchasedItem = EventStore.get(eventId);
   return `You've successfully checked into the event: "${event.title}"` +
-    `\n\nAt the end of this event, please give feedback to the organizers to help them improve by clicking below :)`
+    `\n\nAt the end of this event, ${UserStore.userFirstName(event.user)} please give feedback to the organizers to help them improve by clicking below :)`
 };
 
 

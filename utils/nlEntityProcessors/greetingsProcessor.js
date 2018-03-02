@@ -8,6 +8,7 @@ class GreetingsProcessor extends BaseProcessor {
    * @param nlpEntity
    * @return {Promise.<*>}
    */
+
   static async process(recipientId, nlpEntity) {
     let user = await UserStore.show(recipientId);
     if(this.isGoodByeGreeting(nlpEntity.value)) {
@@ -15,7 +16,7 @@ class GreetingsProcessor extends BaseProcessor {
     }
     await this.sendPayload(recipientId,
       [
-        {text: "Hey! I'm Sarah, a virtual tech events assistant. Type 'help' for a detailed guide. 😇"},
+        {text: `Hey${UserStore.userFirstName(user)}! I'm Sarah, a virtual tech events assistant. Type 'help' for a detailed guide. 😇`},
         messages.messageWithButtons(
           "How can I help you?",
           [messages.viewEventsButton, messages.createEventButton(recipientId), messages.setPreferencesButton(recipientId)]
