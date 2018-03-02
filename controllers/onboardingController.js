@@ -1,12 +1,16 @@
 import sendApi from '../messenger-api-helpers/send';
 import BaseProcessor from '../utils/nlEntityProcessors/baseProcessor';
+import UserStore from '../store/userStore';
 
 class OnboardingController {
   static index(recipientId, user) {
     console.log("[Onboarding controller.index] recipient_id: %s, user: %o", recipientId, user)
     try {
       if (!user) return;
-      if (user.locations && user.locations.length < 1) {
+      if(!user.first_name) {
+        UserStore.requestAndSaveUserDetails(recipientId);
+      }
+      else if (user.locations && user.locations.length < 1) {
         this.requestUserLocation(recipientId)
       }
       else if (user.email && user.email.indexOf('tmntest') != -1) {
