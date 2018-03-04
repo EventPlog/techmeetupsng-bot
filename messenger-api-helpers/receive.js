@@ -110,15 +110,22 @@ async function handleReceiveMessage (event) {
 };
 
 async function sendEventCarousel(userId, eventId) {
-  const event = await EventsController.show(userId, eventId);
-  const eventJSON = JSON.stringify(event);
+  try {
+    const event = await EventsController.checkInByReferral(userId, eventId);
+    const eventJSON = JSON.stringify(event);
 
-  let carouselItems = messages.eventOptionsCarousel(userId, [event]);
-  let outboundMessages = [
-    messages.barCodeWelcomeMessage,
-    carouselItems,
-  ];
-  sendApi.sendMessage(userId, outboundMessages)
+    if (event) {
+      let carouselItems = messages.eventOptionsCarousel(event.user, [event]);
+      let outboundMessages = [
+        messages.barCodeWelcomeMessage(event),
+        carouselItems,
+      ];
+      sendApi.sendMessage(userId, outboundMessages)
+    }
+  }
+  catch(e) {
+    console.log("[receive.sendEventCarousel] error: ", e)
+  }
 }
 /*
  * handleReceiveReferral - Message Event called when a referral event is sent to

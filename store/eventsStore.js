@@ -22,6 +22,11 @@ class EventStore {
     return updatedEvent;
   }
 
+  static async checkInByReferral(recipientId, eventId) {
+    const event = await callWebAPI(`/users/${recipientId}/events/${eventId}/check_in_by_referral`, 'POST', {})
+    return event;
+  }
+
   static async userEvents(recipientId, params={}) {
     try {
       const events = await(callWebAPI(`/users/${recipientId}/user_events`, 'GET'));

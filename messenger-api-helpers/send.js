@@ -148,7 +148,7 @@ const sendAvailableFutureEvents = async (recipientId, params={}) => {
     if (params.event && params.event == 'list') {
       carouselItems = messages.eventsList(recipientId, events);
     } else {
-      carouselItems = [messages.eventOptionsCarousel(recipientId, events)];
+      carouselItems = [messages.eventOptionsCarousel(user, events)];
     }
 
     let outboundMessages = [
@@ -177,7 +177,7 @@ const sendUserRegisteredEvents = async (recipientId, params={}) => {
   if (params.event && params.event == 'list') {
     carouselItems = messages.eventsList(recipientId, events);
   } else {
-    carouselItems = [messages.eventOptionsCarousel(recipientId, events)];
+    carouselItems = [messages.eventOptionsCarousel(user, events)];
   }
 
   let outboundMessages = [
