@@ -292,9 +292,10 @@ const userEventsText = {
 /**
  * Message that precedes an event from a barcode
  */
-const barCodeWelcomeMessage = {
-  text: 'Hey, retrieving the event from the barcode you scanned...',
-};
+const barCodeWelcomeMessage = (event) => ({
+  text: `Hey${UserStore.userFirstName(event.user)}, you've successfully checked into ${event.title}. ` +
+        `\n\nI'm pulling up the event so you can give feedback towards the end or share with a friend. Thanks!`
+});
 
 /**
  * Message that informs the user what event has been selected for them
@@ -338,10 +339,8 @@ const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_
  * @param {String} recipientId Id of the user to send the message to.
  * @returns {Object} Message payload
  */
-const eventOptionsCarousel = (recipientId, events) => {
-  const user = UserStore.get(recipientId) || UserStore.insert({id: recipientId});
-  // const eventOptions = user.getRecommendedEvents();
-
+const eventOptionsCarousel = (user, events) => {
+  console.log("[messages.eventOptionsCarousel] with user: %o", user)
   const carouselItems = events.map(event => eventToCarouselItem(event, user));
 
   return {
@@ -442,7 +441,7 @@ const eventRegisteredMessage = (event) => {
 const eventCheckedInMessage = (event) => {
   // const purchasedItem = EventStore.get(eventId);
   return `You've successfully checked into the event: "${event.title}"` +
-    `\n\nAt the end of this event, ${UserStore.userFirstName(event.user)} please give feedback to the organizers to help them improve by clicking below :)`
+    `\n\nAt the end of this event,${UserStore.userFirstName(event.user)} please give feedback to the organizers to help them improve by clicking below :)`
 };
 
 
@@ -451,7 +450,7 @@ const eventCheckedInMessage = (event) => {
  */
 const invitationToCreateEventMessage =
    `Power tip as you wait...` +
-   `\n\nHosting an event? We'll help you publicize and collect feedback`;
+   `\n\nHosting an event? Send us a link to the event page. We'll help you publicize and make check-in easier`;
 
 /**
  * Message thanking users for checking in
