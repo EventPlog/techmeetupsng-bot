@@ -293,7 +293,7 @@ const userEventsText = {
  * Message that precedes an event from a barcode
  */
 const barCodeWelcomeMessage = (event) => ({
-  text: `Hey${UserStore.userFirstName(event.user)}, you've successfully checked into ${event.title}. ` +
+  text: `Hey${UserStore.userFirstName(event.user)}, I just checked you into ${event.title}. ` +
         `\n\nI'm pulling up the event so you can give feedback towards the end or share with a friend. Thanks!`
 });
 
@@ -316,6 +316,7 @@ const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_
   let attendButton = !is_attending ? attendEventButton(id) :
                       (checked_in_at ? viewDetailsButton(id, user.id, 'Give feedback') :
                                         checkInEventButton(id) )
+  organizer = organizer || {};
   return {
     title,
     subtitle: `By ${organizer.name}` +
@@ -336,7 +337,8 @@ const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_
  * Message that informs the user what event has been selected for them
  * and prompts them to select a different event.
  *
- * @param {String} recipientId Id of the user to send the message to.
+ * @param {object} user to send the message to.
+ * @param {Array} events
  * @returns {Object} Message payload
  */
 const eventOptionsCarousel = (user, events) => {
@@ -520,6 +522,7 @@ export default {
   eventChangedMessage,
   eventsList,
   eventRegisteredMessage,
+  eventToCarouselItem,
   eventCheckedInMessage,
   feedbackSentMessage,
   eventSubmittedMessage,
@@ -535,4 +538,5 @@ export default {
   persistentMenu,
   getStarted,
   invitationToCreateEventMessage,
+  shareEventsButton,
 };

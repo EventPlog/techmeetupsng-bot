@@ -56,7 +56,7 @@ class UserStore {
   }
 
   static userFirstName(user) {
-    return user.first_name ? ` ${user.first_name}` : '';
+    return user && user.first_name ? ` ${user.first_name}` : '';
   }
 }
 
