@@ -160,7 +160,7 @@ const sendAvailableFutureEvents = async (recipientId, params={}) => {
     sendMessage( recipientId, outboundMessages)
   }
   catch(err) {
-    console.log('[Send.sendAvailableFutureEvents] and error occured: ', err)
+    console.log('[Send.sendAvailableFutureEvents] An error occured: ', err)
   }
 };
 
