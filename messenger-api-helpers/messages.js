@@ -315,7 +315,7 @@ const barCodeWelcomeMessage = (event) => ({
 const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_image, is_attending, checked_in_at}, user) => {
   let attendButton = !is_attending ? attendEventButton(id) :
                       (checked_in_at ? viewDetailsButton(id, user.id, 'Give feedback') :
-                                        checkInEventButton(id) )
+                                        checkInEventButton(id) );
   organizer = organizer || {};
   return {
     title,

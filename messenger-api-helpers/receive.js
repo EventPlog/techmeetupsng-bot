@@ -79,6 +79,9 @@ const handleReceivePostback = (event) => {
     case 'CHECK_IN_EVENT':
       handleEventCheckIn(senderId, typeArr);
       break;
+    case 'SHOW_REPORT':
+      sendApi.sendEventReport(senderId, event);
+      break;
     case 'CHOOSE_GIFT':
       handleNewEventSelected(senderId, data.eventId);
       break;

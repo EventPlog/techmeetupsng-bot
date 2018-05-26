@@ -24,7 +24,7 @@ describe('messages', () => {
       expect(messages.barCodeWelcomeMessage(event).text).to.equal(expectedRes.text);
 
     })
-  })
+  });
 
   describe('eventToCarouselItem', () => {
     it('returns an object that matches the expected payload for a carousel item', sinonTest(function() {
@@ -34,8 +34,8 @@ describe('messages', () => {
         featured_image: 'http://sample.com',
         user: {first_name: 'John'}
       };
-      let detailsBtnSpy = this.stub(messages, 'viewDetailsButton').returns({})
-      let shareEventsBtnSpy = this.stub(messages, 'shareEventsButton').returns({})
+      let detailsBtnSpy = this.stub(messages, 'viewDetailsButton').returns({});
+      let shareEventsBtnSpy = this.stub(messages, 'shareEventsButton').returns({});
 
       let carousel = messages.eventToCarouselItem(event, event.user);
       expect(carousel.title).to.equal(event.title);
