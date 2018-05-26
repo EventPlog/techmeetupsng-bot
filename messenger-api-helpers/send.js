@@ -116,7 +116,7 @@ const sendCreateEventMessage = (recipientId) => {
 }
 /**
  * Sends a not found message if there are no events
- * @param recipeientId
+ * @param recipientId
  * @param user
  */
 const sendMessageNotFound = (recipientId, user) => {
@@ -205,7 +205,45 @@ const registerForEvent = async(userId, eventId) => {
       `Unable to register event for User ${userId}'. Error: ${err}`
     );
   }
-}
+};
+
+const showEventReport = async(userId, event) => {
+  logger.fbLog('show_event_report_start', {event_id: event.id}, userId);
+  let response = await callWebAPI(`/users/${userId}/events/${event.id}/report`)
+  try {
+    if (response && response.id) {
+      logger.fbLog('show_event_report_success', {event_id: eventId}, userId)
+      sendEventReport(userId, response)
+    }
+  }
+  catch (err) {
+    console.error(response.status, `Unable to show event for event id: ${event.id}`)
+  }
+};
+
+const peopleTense = (arr) => {
+  return arr && arr.length == 1 ? 'person' : 'people'
+};
+
+const sendEventReport = (recipientId, {
+  checked_in,
+  feedback_responses,
+  percentage_feedback,
+  percentage_avg_satisfaction,
+  nps,
+  percentage_swags
+}) => {
+  let people = `${checked_in.length} ${peopleTense(checked_in)} checked into this event by scanning the TMN code.`;
+  let feedback_res = `${feedback_responses.length} ${peopleTense(feedback_responses)} (${percentage_feedback}%) gave feedback. Congratulations! It’s usually difficult to get up to 10% of event attendees to give feedback through traditional means!`;
+  let satisfaction = `The average satisfaction this event has is *${percentage_avg_satisfaction}%*. ${(percentage_avg_satisfaction > 50) ? 'Great job!' : 'There is always room for improvements :)'}`;
+  let perc_nps = `*${nps * 100}%* of your audience would love to tell their friends of your event (Net Promoter Score: ${nps}).`;
+  let swags = `*${percentage_swags}%* of your audience reported getting swags.`;
+
+  console.log('the send msg: ', sendMessage)
+  sendMessage(recipientId, {
+    text: `${people} \n\n${feedback_res} \n\n${satisfaction} \n\n${perc_nps} \n\n${swags}`
+  });
+};
 
 
 const checkIntoEvent = async(userId, eventId) => {
@@ -287,6 +325,8 @@ export default {
   sendFeedbackSentMessage,
   sendEventSubmittedMessage,
   sendSetPreferencesMessage,
+  showEventReport,
+  sendEventReport,
   registerForEvent,
   checkIntoEvent,
 };

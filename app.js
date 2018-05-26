@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 // require('dotenv').config()
+require('newrelic')
 
 // ===== MODULES ===============================================================
 import bodyParser from 'body-parser';
