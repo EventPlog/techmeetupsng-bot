@@ -13,7 +13,6 @@ global.TMNG.logger = require('../utils/logger')
 
 // configure newrelic
 global.newrelic = require('newrelic');
-app.locals.newrelic = newrelic;
 
 require('babel-register')({
   presets: ['latest', 'react'],
@@ -23,6 +22,9 @@ require('babel-register')({
 // ===== MODULES ===============================================================
 const app = require('../app');
 const http = require('http');
+
+// make newrelic available in templates
+app.locals.newrelic = newrelic;
 
 // Create HTTP server.
 const server = http.createServer(app);
