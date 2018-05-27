@@ -130,7 +130,6 @@ async function handleReceiveMessage (event) {
       sendApi.sendReadReceipt(senderId);
 
       await NLProcessor.nlpCheck(senderId, message)
-      throw(new SyntaxError('An err'))
     }, [event])
   }
   catch(e) {
