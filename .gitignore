@@ -1,5 +1,5 @@
 .DS_Store
-**/*.newrelic_agent.log
+bin/newrelic_agent.log
 
 node_modules/
 .idea
