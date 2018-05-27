@@ -7,7 +7,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 // require('dotenv').config()
-require('newrelic')
+// setup logging
+global.TMNG = {}
+global.TMNG.logger = require('../utils/logger')
+
+// configure newrelic
+global.newrelic = require('newrelic');
+app.locals.newrelic = newrelic;
 
 require('babel-register')({
   presets: ['latest', 'react'],
@@ -20,6 +26,7 @@ const http = require('http');
 
 // Create HTTP server.
 const server = http.createServer(app);
+
 
 // Normalize a port into a number, string, or false.
 const normalizePort = (val) => {
