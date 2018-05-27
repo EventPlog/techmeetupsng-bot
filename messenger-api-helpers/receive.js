@@ -35,7 +35,16 @@ const handleEventRegistration = async (userId, [type, eventId]) =>  {
 }
 
 const handleEventCheckIn = async (userId, [type, eventId]) =>  {
-  sendApi.checkIntoEvent(userId, eventId);
+  try {
+    sendApi.checkIntoEvent(userId, eventId);
+    TMNG.logger.event(``,
+      async function (userId, [type, eventId]) {
+      },
+      [user, [type, eventId]])
+  }
+  catch(e) {
+    TMNG.logger.errorException(`[receive.handleEventCheckIn] An error occured while checking in user: ${userId} for event: ${eventId}`, e)
+  }
 }
 
 /*
@@ -52,45 +61,54 @@ const handleReceivePostback = (event) => {
    * actions to be a string that represents a JSON object
    * containing `type` and `data` properties. EG:
    */
-  const {type, data} = JSON.parse(event.postback.payload);
-  const senderId = event.sender.id;
+  try {
+    console.log('should start the postback now ...')
+    TMNG.logger.event("[receive.handleReceivePostback]", function(event) {
 
-  // perform an action based on the type of payload received
-  let typeArr = type.split('-');
-  switch (typeArr[0]) {
-    case 'VIEW_EVENTS':
-      sendApi.sendAvailableFutureEvents(senderId);
-      break;
-    case 'VIEW_EVENT':
-      handleReceiveReferral(event);
-      break;
-    case 'VIEW_USER_EVENTS':
-      sendApi.sendUserRegisteredEvents(senderId);
-      break;
-    case 'CREATE_EVENT':
-      sendApi.sendCreateEventMessage(senderId);
-      break;
-    case 'SET_PREFERENCES':
-      sendApi.sendSetPreferencesMessage(senderId);
-      break;
-    case 'ATTEND_EVENT':
-      handleEventRegistration(senderId, typeArr);
-      break;
-    case 'CHECK_IN_EVENT':
-      handleEventCheckIn(senderId, typeArr);
-      break;
-    case 'SHOW_REPORT':
-      sendApi.sendEventReport(senderId, event);
-      break;
-    case 'CHOOSE_GIFT':
-      handleNewEventSelected(senderId, data.eventId);
-      break;
-    case 'GET_STARTED':
-      sendApi.sendTextMessage(senderId);
-      break;
-    default:
-      console.error(`Unknown Postback called: ${type}`);
-      break;
+      const {type, data} = JSON.parse(event.postback.payload);
+      const senderId = event.sender.id;
+
+      // perform an action based on the type of payload received
+      let typeArr = type.split('-');
+      switch (typeArr[0]) {
+        case 'VIEW_EVENTS':
+          sendApi.sendAvailableFutureEvents(senderId);
+          break;
+        case 'VIEW_EVENT':
+          handleReceiveReferral(event);
+          break;
+        case 'VIEW_USER_EVENTS':
+          sendApi.sendUserRegisteredEvents(senderId);
+          break;
+        case 'CREATE_EVENT':
+          sendApi.sendCreateEventMessage(senderId);
+          break;
+        case 'SET_PREFERENCES':
+          sendApi.sendSetPreferencesMessage(senderId);
+          break;
+        case 'ATTEND_EVENT':
+          handleEventRegistration(senderId, typeArr);
+          break;
+        case 'CHECK_IN_EVENT':
+          handleEventCheckIn(senderId, typeArr);
+          break;
+        case 'SHOW_REPORT':
+          sendApi.sendEventReport(senderId, event);
+          break;
+        case 'CHOOSE_GIFT':
+          handleNewEventSelected(senderId, data.eventId);
+          break;
+        case 'GET_STARTED':
+          sendApi.sendTextMessage(senderId);
+          break;
+        default:
+          console.error(`Unknown Postback called: ${type}`);
+          break;
+      }
+    }, [event])
+  }
+  catch(e) {
+    TMNG.logger.errorException(`[receive.handReceivePostback] An error occurred for event: ${event}`, e)
   }
 };
 
@@ -101,33 +119,43 @@ const handleReceivePostback = (event) => {
  * docs/messenger-platform/webhook-reference/message-received
  */
 async function handleReceiveMessage (event) {
-  const message = event.message;
-  const senderId = event.sender.id;
+  try {
+    TMNG.logger.event(`[receive.handleReceiveMessage] for event: ${event}`, async function(event) {
+      const message = event.message;
+      const senderId = event.sender.id;
 
-  // It's good practice to send the user a read receipt so they know
-  // the bot has seen the message. This can prevent a user
-  // spamming the bot if the requests take some time to return.
-  sendApi.sendReadReceipt(senderId);
+      // It's good practice to send the user a read receipt so they know
+      // the bot has seen the message. This can prevent a user
+      // spamming the bot if the requests take some time to return.
+      sendApi.sendReadReceipt(senderId);
 
-  await NLProcessor.nlpCheck(senderId, message)
-};
+      await NLProcessor.nlpCheck(senderId, message)
+      throw(new SyntaxError('An err'))
+    }, [event])
+  }
+  catch(e) {
+    TMNG.logger.errorException(`[receive.handleReceiveMessage] An error occurred: ${e.message}`, e)
+  }
+}
 
 async function sendEventCarousel(userId, eventId) {
   try {
-    const event = await EventsController.checkInByReferral(userId, eventId);
-    const eventJSON = JSON.stringify(event);
+    TMNG.logger.event(`[receive.sendEventCarousel] for user and event: ${{userId, eventId}}`, async function(userId, eventId) {
+      const event = await EventsController.checkInByReferral(userId, eventId);
+      const eventJSON = JSON.stringify(event);
 
-    if (event) {
-      let carouselItems = messages.eventOptionsCarousel(event.user, [event]);
-      let outboundMessages = [
-        messages.barCodeWelcomeMessage(event),
-        carouselItems,
-      ];
-      sendApi.sendMessage(userId, outboundMessages)
-    }
+      if (event) {
+        let carouselItems = messages.eventOptionsCarousel(event.user, [event]);
+        let outboundMessages = [
+          messages.barCodeWelcomeMessage(event),
+          carouselItems,
+        ];
+        sendApi.sendMessage(userId, outboundMessages)
+      }
+    }, [userId, eventId])
   }
   catch(e) {
-    console.log("[receive.sendEventCarousel] error: ", e)
+    TMNG.logger.errorException(`[receive.sendEventCarousel] error: ${e.message}`, e)
   }
 }
 /*
@@ -136,24 +164,30 @@ async function sendEventCarousel(userId, eventId) {
  * facebook.com/docs/messenger-platform/reference/webhook-events/messaging_referrals/
  */
 const handleReceiveReferral = (event) => {
-  const senderId = event.sender.id;
-  let payload = {};
-  let eventId;
-  if (event.referral.ref){
-    payload["ref"] = event.referral.ref;
-    let [label, id] = event.referral.ref.split('-')
-    eventId = id;
-  }
-  if (event.referral.ad_id){
-    payload["ad_id"] = event.referral.ad_id;
-  }
-  logger.fbLog("referral", payload, senderId);
+  try {
+    TMNG.logger.event(`[receive.handleReceiveReferral] for event: ${event}`, async function(event) {
+      const senderId = event.sender.id;
+      let payload = {};
+      let eventId;
+      if (event.referral.ref) {
+        payload["ref"] = event.referral.ref;
+        let [label, id] = event.referral.ref.split('-')
+        eventId = id;
+      }
+      if (event.referral.ad_id) {
+        payload["ad_id"] = event.referral.ad_id;
+      }
+      logger.fbLog("referral", payload, senderId);
 
-  if (eventId) {
-    sendEventCarousel(senderId, eventId)
+      if (eventId) {
+        sendEventCarousel(senderId, eventId)
+      }
+    }, [event])
+  }
+  catch (e) {
+    TMNG.logger.errorException(`[receive.handleReceiveReferral] error: ${e.message}`, e)
   }
 };
-
 
 export default {
   handleReceivePostback,

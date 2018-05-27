@@ -159,8 +159,8 @@ const sendAvailableFutureEvents = async (recipientId, params={}) => {
 
     sendMessage( recipientId, outboundMessages)
   }
-  catch(err) {
-    console.log('[Send.sendAvailableFutureEvents] An error occured: ', err)
+  catch(e) {
+    TMNG.logger.errorException(`[Send.sendAvailableFutureEvents] An error occured: ${err.message}`, e)
   }
 };
 

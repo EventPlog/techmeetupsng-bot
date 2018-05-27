@@ -56,6 +56,17 @@ router.post('/', (req, res) => {
 
   const data = req.body;
 
+  const callSafe = (cb, args = []) => {
+    try {
+      cb.apply(null, args)
+      newrelic.recordCustomEvent('PlogCall', {args: args})
+    }
+    catch(e) {
+      console.log('An error occured: ' + e.message)
+      newrelic.noticeError(e, {fn: `${cb.name}()`, data: args})
+    }
+  }
+
   // Make sure this is a page subscription
   if (data.object === 'page') {
     // Iterate over each entry
@@ -64,11 +75,11 @@ router.post('/', (req, res) => {
       // Iterate over each messaging event and handle accordingly
       pageEntry.messaging.forEach((messagingEvent) => {
         if (messagingEvent.message) {
-          receiveApi.handleReceiveMessage(messagingEvent);
+          callSafe(receiveApi.handleReceiveMessage, [messagingEvent]);
         } else if (messagingEvent.postback) {
-          receiveApi.handleReceivePostback(messagingEvent);
+          callSafe(receiveApi.handleReceivePostback, [messagingEvent]);
         } else if (messagingEvent.referral) {
-          receiveApi.handleReceiveReferral(messagingEvent);
+          callSafe(receiveApi.handleReceiveReferral, [messagingEvent]);
         } else {
           // console.log(
           //   'Webhook received unknown messagingEvent: ',
