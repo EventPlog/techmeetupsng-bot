@@ -163,7 +163,7 @@ const setPreferencesPostback = {
  * Button for sharing events`
  * @type {{type: string, share_contents: {attachment: {type: string, payload: {template_type: string, elements: [*]}}}}}
  */
-const shareEventsButton = ({id: eventId, title, organizer, featured_image}, userId) => ({
+const shareEventsButton = ({id: eventId, title, community, featured_image}, userId) => ({
   type: "element_share",
   share_contents: {
     attachment: {
@@ -173,7 +173,7 @@ const shareEventsButton = ({id: eventId, title, organizer, featured_image}, user
         elements: [
           {
             title,
-            subtitle: "By: " + organizer.name,
+            subtitle: "By: " + community.name,
             image_url: featured_image,
             default_action: {
               type: "web_url",
@@ -308,18 +308,18 @@ const barCodeWelcomeMessage = (event) => ({
  * @param {string} venue - The Event venue
  * @param {boolean} is_attending - User attending or not?
  * @param {string} checked_in_at - Date and time of check in
- * @param {Object} organizer - The Event organizer.
+ * @param {Object} community - The Event community.
  * @param {Object} featured_image - Path to the original image for the event.
  * @returns {Object} Messenger representation of a carousel item.
  */
-const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_image, is_attending, checked_in_at}, user) => {
+const eventToCarouselItem = ({id, title, date, time, venue, community, featured_image, is_attending, checked_in_at}, user) => {
   let attendButton = !is_attending ? attendEventButton(id) :
                       (checked_in_at ? viewDetailsButton(id, user.id, 'Give feedback') :
                                         checkInEventButton(id) );
-  organizer = organizer || {};
+  community = community || {};
   return {
     title,
-    subtitle: `By ${organizer.name}` +
+    subtitle: `By ${community.name}` +
               `\nDate: ${date}` +
               `\nTime: ${time}` +
               `\nVenue: ${venue || 'Not yet specified'}`,
@@ -327,7 +327,7 @@ const eventToCarouselItem = ({id, title, date, time, venue, organizer, featured_
     buttons: [
       viewDetailsButton(id, user.id),
       attendButton,
-      shareEventsButton({id, title, organizer, featured_image}, user.id)
+      shareEventsButton({id, title, community, featured_image}, user.id)
     ],
   };
 };
@@ -365,21 +365,21 @@ const eventOptionsCarousel = (user, events) => {
  * @param {Object} date - The Event date
  * @param {Object} time - The Event time
  * @param {Object} venue - The Event venue
- * @param {Object} organizer - The Event organizer.
+ * @param {Object} community - The Event community.
  * @param {Object} featured_image - Path to the original image for the event.
  * @returns {Object} Messenger representation of a carousel item.
  */
-const eventToListItem = ({id, title, date, time, venue, organizer, featured_image}, user) => {
+const eventToListItem = ({id, title, date, time, venue, community, featured_image}, user) => {
   return messageWithButtons(
     `${title}` +
-    `\n\nOrganized by ${organizer.name}` +
+    `\n\nOrganized by ${community.name}` +
     `\n\nDate: ${date}` +
     `\nTime: ${time}` +
     `\nVenue: ${venue || 'Not yet specified'}`,
     [
       viewDetailsButton(id, user.id),
       attendEventButton(id),
-      shareEventsButton({id, title, organizer, featured_image}, user.id)
+      shareEventsButton({id, title, community, featured_image}, user.id)
     ]
   );
 };
