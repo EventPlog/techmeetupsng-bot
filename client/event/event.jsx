@@ -145,7 +145,7 @@ class Event extends React.Component {
     }
     const successImagePath = `/media/ui/success-check-mark.svg`;
     const {id, title, featured_image, description,
-            link, date, time, venue, organizer, speakers, agenda} = this.props;
+            link, date, time, venue, community, speakers, agenda} = this.props;
     const { isAttending, checkedInAt, feedbackResponse, showLoading, showToast, userId } = this.state;
     let isCheckedIn = !!(isAttending && checkedInAt);
     let shouldShowSpeakers = !isCheckedIn || (isCheckedIn && feedbackResponse.id);
@@ -159,7 +159,7 @@ class Event extends React.Component {
               <div className='product-details'>
                 <h1>{title}</h1>
                 <p className='static-page-subtitle'>
-                  <a href={link}>By: {organizer.name}</a>
+                  <a href={link}>By: {community.name}</a>
                 </p>
               </div>
             </div>
