@@ -121,10 +121,9 @@ const showNextPagePostback = (page = 2) => ({
       image_url: `${SERVER_URL}/media/ui/radio-filled.png`,
       payload: `VIEW_EVENTS_PAGE-${page}`,
     },
-    {
-      content_type: "location",
-      title: 'Or pick a preferred location'
-    }
+    // {
+    //   content_type: "location",
+    // }
   ],
 });
 
