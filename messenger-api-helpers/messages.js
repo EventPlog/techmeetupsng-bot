@@ -112,6 +112,22 @@ const createEventsPostback = {
   }),
 };
 
+const showNextPagePostback = (page = 2) => ({
+  text: "There might be more events...",
+  quick_replies: [
+    {
+      content_type: "text",
+      title: "Show me more events",
+      image_url: `${SERVER_URL}/media/ui/radio-filled.png`,
+      payload: `VIEW_EVENTS_PAGE-${page}`,
+    },
+    {
+      content_type: "location",
+      title: 'Or pick a preferred location'
+    }
+  ],
+});
+
 /*
  * Button for selecting a event
  */
@@ -278,9 +294,15 @@ const currentEventButton = (recipientId) => {
  * Message that precedes us displaying recommended events.
  */
 const eventOptionsText = {
-  text: 'Pulling up a list of events you might like ...',
+  text: 'Pulling up a list of events you might like, max 10 per page ...',
 };
 
+/**
+ * Message that precedes us displaying next page of recommended events.
+ */
+const waitForNextEventsPage = {
+  text: 'Showing other amazing events...',
+};
 
 /**
  * Message that precedes us displaying recommended events.
@@ -452,7 +474,7 @@ const eventCheckedInMessage = (event) => {
  */
 const invitationToCreateEventMessage =
    `Power tip as you wait...` +
-   `\n\nHosting an event? Send us a link to the event page. We'll help you publicize and make check-in easier`;
+   `\n\nVisit http://techmeetupsng.com to see what's up with events around you. Or create your own`
 
 /**
  * Message thanking users for checking in
@@ -539,4 +561,6 @@ export default {
   getStarted,
   invitationToCreateEventMessage,
   shareEventsButton,
+  waitForNextEventsPage,
+  showNextPagePostback,
 };
