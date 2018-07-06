@@ -5,8 +5,8 @@
     "node": ">7.10.1",
     "npm": "4.0.x"
   },
-  "description": "Demo showing how to the Messenger Platform's webview to create GUI in a bot.",
-  "author": "Facebook Inc.",
+  "description": "A bot to complement techmeetuspng's mission of celebrating tech events, people and communities",
+  "author": "TechMeetups Inc",
   "license": "See LICENSE file.",
   "private": true,
   "scripts": {

@@ -75,7 +75,9 @@ router.post('/', (req, res) => {
       // Iterate over each messaging event and handle accordingly
       pageEntry.messaging.forEach((messagingEvent) => {
         if (messagingEvent.message) {
-          callSafe(receiveApi.handleReceiveMessage, [messagingEvent]);
+          messagingEvent.message.quick_reply
+            ? callSafe(receiveApi.handleReceiveQuickReply, [messagingEvent])
+            : callSafe(receiveApi.handleReceiveMessage, [messagingEvent]);
         } else if (messagingEvent.postback) {
           callSafe(receiveApi.handleReceivePostback, [messagingEvent]);
         } else if (messagingEvent.referral) {

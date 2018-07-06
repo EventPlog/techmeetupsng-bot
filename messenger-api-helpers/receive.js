@@ -17,6 +17,49 @@ import messages from './messages';
 // import UserStore from '../stores/user-store';
 import UserStore from '../store/userStore';
 
+const performPayloadBasedAction = (type, event) => {
+  const senderId = event.sender.id;
+  // perform an action based on the type of payload received
+  let typeArr = type.split('-');
+  switch (typeArr[0]) {
+    case 'VIEW_EVENTS':
+      sendApi.sendAvailableFutureEvents(senderId);
+      break;
+    case 'VIEW_EVENTS_PAGE':
+      sendApi.sendAvailableFutureEvents(senderId, {page: typeArr[1]});
+      break;
+    case 'VIEW_EVENT':
+      handleReceiveReferral(event);
+      break;
+    case 'VIEW_USER_EVENTS':
+      sendApi.sendUserRegisteredEvents(senderId);
+      break;
+    case 'CREATE_EVENT':
+      sendApi.sendCreateEventMessage(senderId);
+      break;
+    case 'SET_PREFERENCES':
+      sendApi.sendSetPreferencesMessage(senderId);
+      break;
+    case 'ATTEND_EVENT':
+      handleEventRegistration(senderId, typeArr);
+      break;
+    case 'CHECK_IN_EVENT':
+      handleEventCheckIn(senderId, typeArr);
+      break;
+    case 'SHOW_REPORT':
+      sendApi.sendEventReport(senderId, event);
+      break;
+    case 'CHOOSE_GIFT':
+      handleNewEventSelected(senderId, data.eventId);
+      break;
+    case 'GET_STARTED':
+      sendApi.sendTextMessage(senderId);
+      break;
+    default:
+      console.error(`Unknown Postback called: ${type}`);
+      break;
+  }
+}
 
 // Updates a users preferred event, then notifies them of the change.
 const handleNewEventSelected = (senderId, eventId) => {
@@ -47,6 +90,18 @@ const handleEventCheckIn = async (userId, [type, eventId]) =>  {
   }
 }
 
+const handleReceiveQuickReply = (event) => {
+  try {
+    console.log('should start the quick reploy now ...')
+    TMNG.logger.event("[receive.handleReceiveQuickReply]", function(event) {
+      const { payload } = event.message.quick_reply;
+      performPayloadBasedAction(payload, event);
+    }, [event])
+  }
+  catch(e) {
+    TMNG.logger.errorException(`[receive.handReceiveQuickReply] An error occurred for event: ${event}`, e)
+  }
+}
 /*
  * handleReceivePostback — Postback event handler triggered by a postback
  * action you, the developer, specify on a button in a template. Read more at:
@@ -63,48 +118,10 @@ const handleReceivePostback = (event) => {
    */
   try {
     console.log('should start the postback now ...')
+
     TMNG.logger.event("[receive.handleReceivePostback]", function(event) {
-
       const {type, data} = JSON.parse(event.postback.payload);
-      const senderId = event.sender.id;
-
-      // perform an action based on the type of payload received
-      let typeArr = type.split('-');
-      switch (typeArr[0]) {
-        case 'VIEW_EVENTS':
-          sendApi.sendAvailableFutureEvents(senderId);
-          break;
-        case 'VIEW_EVENT':
-          handleReceiveReferral(event);
-          break;
-        case 'VIEW_USER_EVENTS':
-          sendApi.sendUserRegisteredEvents(senderId);
-          break;
-        case 'CREATE_EVENT':
-          sendApi.sendCreateEventMessage(senderId);
-          break;
-        case 'SET_PREFERENCES':
-          sendApi.sendSetPreferencesMessage(senderId);
-          break;
-        case 'ATTEND_EVENT':
-          handleEventRegistration(senderId, typeArr);
-          break;
-        case 'CHECK_IN_EVENT':
-          handleEventCheckIn(senderId, typeArr);
-          break;
-        case 'SHOW_REPORT':
-          sendApi.sendEventReport(senderId, event);
-          break;
-        case 'CHOOSE_GIFT':
-          handleNewEventSelected(senderId, data.eventId);
-          break;
-        case 'GET_STARTED':
-          sendApi.sendTextMessage(senderId);
-          break;
-        default:
-          console.error(`Unknown Postback called: ${type}`);
-          break;
-      }
+      performPayloadBasedAction(type, event);
     }, [event])
   }
   catch(e) {
@@ -190,6 +207,7 @@ const handleReceiveReferral = (event) => {
 
 export default {
   handleReceivePostback,
+  handleReceiveQuickReply,
   handleReceiveMessage,
   handleReceiveReferral,
   handleNewEventSelected,
