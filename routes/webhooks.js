@@ -83,10 +83,10 @@ router.post('/', (req, res) => {
         } else if (messagingEvent.referral) {
           callSafe(receiveApi.handleReceiveReferral, [messagingEvent]);
         } else {
-          console.log(
-            'Webhook received unknown messagingEvent: ',
-            messagingEvent
-          );
+          // console.log(
+          //   'Webhook received unknown messagingEvent: ',
+          //   messagingEvent
+          // );
         }
       });
     });
