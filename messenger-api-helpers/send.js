@@ -137,9 +137,10 @@ const sendMessageNotFound = (recipientId, user) => {
 
 // Send a message displaying the events a user can choose from.
 const sendAvailableFutureEvents = async (recipientId, params={}) => {
+  const MAX_EVENTS = 10;
   try {
     const {user, events} = await EventsController.index(recipientId, params);
-    if(events && events.length < 1) {
+    if(!events || (events && events.length < 1)) {
       return sendMessageNotFound(recipientId, user);
     }
 
@@ -151,11 +152,18 @@ const sendAvailableFutureEvents = async (recipientId, params={}) => {
       carouselItems = [messages.eventOptionsCarousel(user, events)];
     }
 
+    let preMessages = params.page
+      ? [messages.waitForNextEventsPage]
+      : [messages.eventOptionsText, sendInvitationToCreateEventMessage(recipientId)]
+
     let outboundMessages = [
-      messages.eventOptionsText,
-      sendInvitationToCreateEventMessage(recipientId),
+      ...preMessages,
       ...carouselItems,
     ];
+
+    if (events.length >= MAX_EVENTS) {
+      outboundMessages = outboundMessages.concat(messages.showNextPagePostback((params.page || 1) + 1))
+    }
 
     sendMessage( recipientId, outboundMessages)
   }
